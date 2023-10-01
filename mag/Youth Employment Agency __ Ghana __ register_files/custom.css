@@ -1,0 +1,783 @@
+﻿@media (min-width: 1200px) {
+    .container{
+        max-width: 985px;
+    }
+}
+
+.bold
+{
+    color:#FFF;
+    font-weight:bold;
+}
+
+.title
+{   
+    display:inline;
+    float: left;
+    text-align: left;
+    width:auto;
+    /*font-size:10px;*/
+    /*font-family:Verdana,Geneva,sans-serif;
+    color:#157213;
+    border: 1px solid transparent;
+    border-radius: 4px;*/
+   text-shadow: -1px -1px 1px #fff, 1px 1px 1px #000; color: #9c8468; opacity: 1.0; font: 25px 'Museo700'; 
+     
+}
+
+
+h5
+{
+    color:Red;
+}
+
+
+/*.title 
+}
+
+/*.title h1
+{
+    display: block;
+    float: left;
+    text-align: left;
+    width: auto;
+    text-shadow: 5px 5px 0px #eee, 7px 7px 0px #707070;
+}*/
+
+
+#area
+{
+    background-color:rgb(249,246,193);
+}
+
+#footerNav
+{
+   background-color: #222;
+   border-color: #080808;
+   width:985px;
+   position:static;
+   bottom:0;
+   overflow:hidden;
+   height: 40px;
+}
+
+#footer {
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:60px;   /* Height of the footer */
+   background:#6cf;
+}
+
+#testfooter
+{
+    position:absolute;
+	bottom:0;
+	left:0;
+    right:0;
+}
+
+.notice
+{
+    text-align:center;
+    color:red;
+    margin:auto;
+}
+
+.defaultPage
+{
+    width: 960px;
+    background-color: #fff;
+    margin: 20px auto 0px auto;
+     /*border: 1px solid #496077 ;*/
+}
+
+.loginDialogue
+{
+    margin:auto;
+    width:500px;
+    height:400px;
+}
+
+.page
+{
+    width:970px;
+    background-color: #fff;
+    /*margin: 20px auto 0px auto;*/
+    border: 1px solid #496077 ;
+    padding-right:15px;
+    padding-left:15px;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+.divcontainer
+{
+    width:650px;
+    margin:auto;
+}
+
+.gallery
+{
+  width:600px;
+  margin:auto;
+ }
+
+.gallery ul
+{
+  list-style:none;
+}
+
+
+.gallery li
+{
+  float:left;
+  margin:10px;
+}
+
+.gallery img
+{
+  display:block;
+  padding:5px;
+  background:#42517f;
+  border:1px solid #99adeb;
+  box-shadow:1px 1px 2px #000;
+}
+
+.gallery img:hover
+{
+  border: 1px solid #fff;
+}
+
+#divfooter
+{
+    background:#e9e8df;
+    color:#000;
+    border:1px solid #99adeb;
+  box-shadow:1px 1px 2px #e9e8df;
+}
+
+/* Error Message class*/
+isa_info, .isa_success, .isa_warning, .isa_error 
+{
+  margin: 10px 0px;
+  padding:12px;
+}
+isa_info {
+    color: #00529B;
+    background-color: #BDE5F8;
+}
+.isa_success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+.isa_warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+.isa_error {
+    color: #D8000C;
+    background-color: #FFBABA;
+}
+.isa_info i, .isa_success i, .isa_warning i, .isa_error i {
+    margin:10px 22px;
+    font-size:2em;
+    vertical-align:middle;
+}
+
+
+#hero
+{
+    width:970px;
+    height:480px;
+    display:block;
+    position:relative;
+    margin-right:50px;
+}
+
+@media (min-width: 768px) {
+  #hero  {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  #hero {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  #hero {
+    width: 1170px;
+  }
+}
+
+@media (min-width: 768px) {
+  #hero{
+    width: 750px;
+  }
+}
+
+#hero-fluid {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+
+
+#slider
+{
+    width:960px;
+    height:467px;
+    display:block;
+    position:absolute;
+    overflow:hidden;
+}
+
+.info
+{
+    width:960px;
+    height:100px;
+    display:block;
+    position:relative;
+    bottom:207px;
+    z-index:99;
+    left: 0px;
+    background:rgba(102,204,0,0.5);
+}
+
+.info h2
+{
+    font-family:sans-serif;
+    font-size:20px;
+    font-weight:bold;
+    color:#ffffff;
+    padding:15px 0 0 20px;
+}
+
+.info p
+{
+    font-family:sans-serif;
+    font-size:15px;
+    font-weight:lighter;
+    color:#fff;
+    padding:0 0 0 20px;
+    line-height:1px;
+}
+
+.lnk
+{
+    color:#d82b25;
+}
+
+#controls
+{
+    position:relative;
+    margin-right:10px;
+    float:right;
+    width:165px;
+}
+
+#play
+{
+    width:40px;
+    height:40px;
+    line-height:40px;
+    display:block;
+    position:absolute;
+    top:0;
+    right:50px;
+    background:rgba(102,204,0,0.2);
+    color:#fff;
+    cursor:pointer;
+    z-index:999;
+  
+}
+
+#pause
+{
+    width:40px;
+    height:40px;
+    line-height:40px;
+    display:block;
+    position:absolute;
+    top:0;
+    right:100px;
+    background:rgba(102,204,0,0.2);
+    color:#fff;
+    cursor:pointer;
+    z-index:999;
+}
+
+
+#next
+{
+    width:40px;
+    height:40px;
+    line-height:40px;
+    display:block;
+    position:absolute;
+    top:0;
+    right:1px;
+    background:rgba(102,204,0,0.2);
+    color:#fff;
+    cursor:pointer;
+    z-index:999;
+}
+
+#prev
+{
+    width:40px;
+    height:40px;
+    line-height:40px;
+    display:block;
+    position:absolute;
+    top:0;
+    right:150px; 
+    background:rgba(102,204,0,0.2);
+    color:#fff;
+    cursor:pointer;
+    z-index:999;
+}
+
+#pager
+{
+    width:100%;
+    text-align:center;
+    display:block;
+    position:absolute;
+    cursor:pointer;
+    z-index:999;
+    top: 2px;
+    left: 0px;
+}
+
+    #pager a
+    {
+        font-size:.0em;
+        color:transparent;
+        width:10px;
+        height:10px;
+        display:inline-block;
+        position:relative;
+        border:1px solid #fff;
+        border-radius:20px;
+        background:transparent;
+        margin:10px;
+    }
+
+        #pager a.activeSlide
+        {
+            background:#fff;
+        }
+
+    /* This is the CSS class to use when no focus is on the input control */
+    .input_text
+    {
+       border:1px solid #c0c0c0;
+       width:250px;
+       color:#000;
+       padding:2px;
+       background-color:#ffffff;
+       height: 24px;
+    }
+
+
+   /* This is the CSS class to use when the control has focus */
+   .input_text:focus, input.input_text_focus
+   {
+      border-color:#4372AA;
+      background-color:#fffdb4;
+   }
+   
+   
+   /* This is the CSS class to use when no focus is on the input control */
+    .input_modify
+    {
+       border:2px solid #c0c0c0;
+       width:180px;
+       color:#000;
+       padding:2px;
+       background-color:#ffffff;
+       height: 24px;
+    }
+
+
+   /* This is the CSS class to use when the control has focus */
+   .input_modify:focus, input.input_modify_focus
+   {
+      border-color:#4372AA;
+      background-color:#fffdb4;
+   }
+   
+   
+   /* This is the CSS class to use when no focus is on the input control */
+    .input_ddlModify
+    {
+       border:1px solid #c0c0c0;
+       width:120px;
+       color:#000;
+       padding:2px;
+       background-color:#ffffff;
+       height: 24px;
+    }
+
+
+   /* This is the CSS class to use when the control has focus */
+   .ddlModify:focus, input.ddlModify_focus
+   {
+      border-color:#4372AA;
+      background-color:#fffdb4;
+   }
+   
+   
+   
+   /* This is the CSS class to use when no focus is on the input control */
+    .input_date
+    {
+       border:1px solid #c0c0c0;
+       width:150px;
+       color:#000;
+       padding:2px;
+       background-color:#ffffff;
+       height: 24px;
+    }
+
+
+   /* This is the CSS class to use when the control has focus */
+   .input_date:focus, input.input_date_focus
+   {
+      border-color:#4372AA;
+      background-color:#fffdb4;
+   }
+
+
+    /* This is the CSS class to use when no focus is on the input control */
+    .input_captcha
+    {
+       border:1px solid #c0c0c0;
+       width:200px;
+       padding:2px;
+       color:#000;
+       background-color:#ffffff;
+       height:24px;
+    }
+
+   /* This is the CSS class to use when the control has focus */
+   .input_captcha:focus, input.input_captcha_focus
+   {
+      border-color:#4372AA;
+      background-color:#fffdb4;
+   }
+
+
+ .tdRight
+ {
+    text-align:right;  
+    display: block;  
+    color: #000;
+    font-family:Verdana;
+    padding:6px 10px;
+ }
+
+ .tdLeft
+ {
+    text-align:left;  
+    display: block;  
+    color: #000;
+    font-family:Verdana;
+    padding:6px 6px;
+ }
+
+ .form-header {
+  padding-bottom: 9px;
+  margin: 40px 0 20px;
+  border-bottom: 1px solid #eee;
+}
+
+ .form-heading {
+  padding:8px 8px;
+  border-bottom: 1px solid transparent;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+ .form-default {
+  border-color: #ddd;
+}
+
+.form-default > .form-heading {
+  color:#333;
+  background-color:#C3C3C3;
+  border-color: #ddd;
+}
+  
+#Step1
+{
+   display:block;
+}
+
+#Step2,#Step3,#Step4,#Step5,#Step6,#Step7
+{
+   display:block;
+}
+
+.FinalOutput
+{
+    margin:auto;
+    width:650px;
+    position:relative;
+}
+
+.FinalOutputPrint
+{
+    margin:auto;
+    width:600px;
+    position:relative;
+}
+
+.SubmitRecord
+{
+    margin-left:200px;
+    width:200px;
+}
+
+#StepOne
+{
+   Width:550px;
+   margin:auto;
+   margin-bottom:40px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block;
+}
+
+#StepTwo,#StepThree,#StepFour,#StepFive,#StepSix,#StepSeven
+{
+   Width:550px;
+   margin:auto;
+   margin-bottom:40px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:none;
+}
+
+
+#StepContinueOne
+{
+   Width:550px;
+   margin:auto;
+   margin-bottom:40px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:none;
+}
+
+#StepContinueTwo,#StepContinueThree,#StepContinueFour,#StepContinueFive,#StepContinueSix,#StepContinueSeven
+{
+   Width:550px;
+   margin:auto;
+   margin-bottom:40px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:none;
+}
+
+
+#StepModifyOne
+{
+   Width:600px;
+   height:auto;
+   margin:auto;
+   margin-top:10px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block;
+}
+
+#StepModifyTwo
+{
+   Width:600px;
+   height:200px;
+   margin:auto;
+   margin-top:10px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block;
+    
+}
+
+
+#StepModifyThree
+{
+   Width:600px;
+   height:300px;
+   margin:auto;
+   margin-top:10px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block;
+    
+}
+
+#StepModifyFour
+{
+   Width:600px;
+   height:300px;
+   margin:auto;
+   margin-top:10px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block; 
+}
+
+#StepModifyFive
+{
+   Width:600px;
+   height:300px;
+   margin:auto;
+   margin-top:10px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block; 
+}
+
+
+#StepModifySix
+{
+   Width:600px;
+   height:300px;
+   margin:auto;
+   margin-top:10px;
+   background-color:#fafafa;
+   border: 3px solid #eee;
+   display:block; 
+}
+
+
+#printPage
+{
+   Width:600px;
+}
+
+.inputDiv
+{
+    background: url('/Images/bg.jpg') no-repeat center center fixed;
+	background-repeat:repeat-x;
+}
+.banner
+{
+    width:985px;
+    height:30px;
+    background-color:rgb(247, 241, 163);
+}
+
+.container{padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto;}
+@media (min-width:768px)
+{.container{width:750px}}
+@media (min-width:992px){.container{width:970px}}
+@media (min-width:1200px){.container{width:1170px}}
+.container-fluid{padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}
+.row{margin-right:-15px;margin-left:-15px}
+
+
+.starMark
+ {
+    color: #FF3300;
+    font-size:14px;
+ }
+
+.notice
+ {
+    color: #FF3300;
+    font-size:16px;
+ }
+
+.information
+{
+   Width:600px;
+   margin:auto;
+   margin-top:10px;
+   background-color:rgb(249,246,193);
+   color:black;
+   border: 1px solid #99adeb;
+}
+
+.information2
+{
+   Width:550px;
+   margin:auto;
+   margin-top:10px;
+   background-color:rgb(249,246,193);
+   color:black;
+   border: 1px solid #99adeb;
+}
+
+.infobutton
+{
+   Width:550px;
+   margin:auto;
+   color:black;
+   border: 1px solid #99adeb;
+}
+
+ #hintbox{ /*CSS for pop up hint box */
+position:absolute;
+top: 0;
+background-color: #f2a713;
+width: 150px; /*Default width of hint.*/
+padding: 3px;
+border:1px solid black;
+font:normal 11px Verdana;
+line-height:18px;
+z-index:100;
+border-right: 3px solid black;
+border-bottom: 3px solid black;
+visibility: hidden;
+color:#ffffff
+}
+
+.hintanchor{ /*CSS for link that shows hint onmouseover*/
+font-weight: bold;
+color: navy;
+margin: 3px 8px;
+}
+
+ .tdstyle
+ {
+     height: 21px;
+     color:#000000;
+     font-weight:bold;
+     font-family:"Helvetica","Lucida Grande","Segoe UI",Arial,Helvetica,Verdana,sans-serif;
+  }
+  
+ .tdstyleOutput
+ {
+     height: 21px;
+     color:#000000;
+     text-align:right;
+     padding:6px 12px;
+     font-weight:bold;
+     font-family:"Helvetica","Lucida Grande","Segoe UI",Arial,Helvetica,Verdana,sans-serif;
+  }
+
+ #map-canvas 
+ {
+    float:right;
+    width: 320px;
+    height:340px;
+ }
+
+ #map-address
+ {
+    float:left;
+    width: 300px;
+    height: 400px;
+ }
+
+#accord
+{
+    width:600px;
+    margin:auto;   
+}

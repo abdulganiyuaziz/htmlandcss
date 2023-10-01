@@ -1,0 +1,2478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0060)http://applications.yea.gov.gh/register/public/Register.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	Applicant Registration System
+</title><link href="bootstrap.min.css" rel="stylesheet"><link href="bootstrap-theme.min.css" rel="stylesheet"><link href="jquery-ui(1).css" rel="stylesheet"><link href="custom.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="jquery-latest.min.js"></script>
+    <script type="text/javascript" src="jquery.maskedinput.min.js"></script>
+    <script type="text/javascript" src="Showhint.js"></script>
+    <script type="text/javascript" src="onlytext.js"></script>
+    <script type="text/javascript" src="showLoading.js"></script>
+    <link href="showLoading.css" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        var litracyLevel, title, surname, firstname, othernames,
+                 gender, dob, placeofbirth, maritalstatus, spousename,
+                 identificationtype, identificationnumber,
+                 locationregion, locationdistrict, locationtown,
+                 postaladdress, mobileNumber,
+                 emergencycontactname, emergencycontactnumber, emergencycontactaddress,
+                 anyacademicqualification, highesteducationallevel, academicqualification,
+                 dateAcademicacquired, anyprofessionalqualification, professionalQualification,
+                 dateProfQualifacquired, otherskills, anyemploymenthistory, lastemployer, startdate, enddate, eregion, edistrict, referencetelno, jobduties,
+                 wregion, wdistrict, wtown, wmodule;
+
+
+
+        jQuery(function ($) 
+        {
+            $('#txtDateOfBirth').mask("99/99/9999", { placeholder: "dd/mm/yyyy" });
+            $('#txtMobileNo').mask("9999999999", { placeholder: "XXXXXXXXXX" });
+            $('#txtEmergencyContact').mask("9999999999", { placeholder: "XXXXXXXXXX" });
+            
+            $('#txtAcademicQualifDateAcquired').mask("99/9999", { placeholder: "mm/yyyy" });
+            $('#txtProfQualifDateAcquired').mask("99/9999", { placeholder: "mm/yyyy" });
+
+            $('#txtStartDate').mask("99/9999", { placeholder: "mm/yyyy" });
+            $('#txtEndDate').mask("99/9999", { placeholder: "mm/yyyy" });
+        });
+
+
+        $(document).ready(function ()
+        {
+            invisibleControls();
+            PopulateProfessionalQualifications();
+
+            $('#ddlRegion').change(function ()
+            {
+                if ($('#ddlRegion option:selected').text() == "All Regions") {
+                    alert("You must select a region");
+                    $('#ddlRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    $("#btnNext2").attr('disabled', 'disabled');
+                }
+                else {
+                    $("#btnNext2").removeAttr('disabled');
+                }
+            });
+
+
+            $('#ddlEHRegion').change(function ()
+            {
+                if ($('#ddlEHRegion option:selected').text() == "All Regions") {
+                    alert("You must select a region");
+                    $('#ddlEHRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    $("#btnNext5").attr('disabled', 'disabled');
+                }
+                else {
+                    $("#btnNext5").removeAttr('disabled');
+                }
+            });
+
+
+            $('#ddlWRegion').change(function ()
+            {
+                if ($('#ddlWRegion option:selected').text() == "All Regions") {
+                    alert("You must select a region");
+                    $('#ddlWRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    $("#btnNext6").attr('disabled', 'disabled');
+                }
+                else {
+                    $("#btnNext6").removeAttr('disabled');
+                }
+            });
+
+
+
+
+            jQuery('#txtIdentificationNumber').blur(function ()
+            {
+
+                var data = {
+                    ApplicantDataObject:
+                       {
+                           IdentificationNumber: $('#txtIdentificationNumber').val()
+                       }
+                };
+                $("#verifyArea").showLoading();
+                setTimeout(function ()
+                {
+                    $.ajax({
+                        url: "Register.aspx/SearchForIdentificationNumber",
+                        data: JSON.stringify(data),
+                        datatype: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (result)
+                        {
+                            $("#verifyArea").hideLoading();
+                            if (result.d == "Identification number exist") {
+                                //alert(result.d)
+                                alert("Identification Number " + $('#txtIdentificationNumber').val() + " already exist!!");
+                                $("#btnNext1").attr('disabled', 'disabled');
+                            }
+                            else {
+                                $("#btnNext1").removeAttr('disabled');
+                            }
+                        }
+                    });
+
+                }, 500);
+                return false;
+            });
+
+
+
+            ///*************************************** Events of Basic Personal *****************************************************************
+
+            $('#txtSurname').blur(function () { $('#txtSurname').css({ "border": "", "background": "" }); });
+            $('#ddlTitle ').blur(function () { $('#ddlTitle').css({ "border": "", "background": "" }); });
+            $('#txtFirstName').blur(function () { $('#txtFirstName').css({ "border": "", "background": "" }); });
+            $('#ddlGender').blur(function () { $('#ddlGender').css({ "border": "", "background": "" }); });
+
+
+            $('#txtDateOfBirth').blur(function ()
+            {
+                var txtVal = $('#txtDateOfBirth').val();
+                if (isValidDate(txtVal)) {
+                    $('#txtDateOfBirth').css({ "border": "", "background": "" });
+                }
+                else 
+                {
+                    alert('Date of Birth is Invalid');
+                    $('#txtDateOfBirth').val('');
+                    $('#txtDateOfBirth').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+            });
+
+            $('#txtPlaceOfBirth').blur(function () { $('#txtPlaceOfBirth').css({ "border": "", "background": "" }); });
+            $('#ddlMaritalStatus').blur(function () { $('#ddlMaritalStatus').css({ "border": "", "background": "" }); });
+            $('#txtSpouseName').blur(function () { $('#txtSpouseName').css({ "border": "", "background": "" }); });
+            $('#ddlIDType').blur(function () { $('#ddlIDType').css({ "border": "", "background": "" }); });
+            $('#txtIdentificationNumber').blur(function () { $('#txtIdentificationNumber').css({ "border": "", "background": "" }); });
+
+
+            ///*************************************** Events of Location Details *****************************************************************
+            $('#ddlRegion').blur(function () { $('#ddlRegion').css({ "border": "", "background": "" }); });
+            $('#ddlDistrict').blur(function () { $('#ddlDistrict').css({ "border": "", "background": "" }); });
+            $('#txtTown').blur(function () { $('#txtTown').css({ "border": "", "background": "" }); });
+
+            ///*************************************** Events of Contact Information ******************************************************************8
+            $('#txtMobileNo').blur(function () { $('#txtMobileNo').css({ "border": "", "background": "" }); });
+            $('#txtEmergencyContactName').blur(function () { $('#txtEmergencyContactName').css({ "border": "", "background": "" }); });
+            $('#txtEmergencyContact').blur(function () { $('#txtEmergencyContact').css({ "border": "", "background": "" }); });
+            $('#txtEmergencyContactAddress').blur(function () { $('#txtEmergencyContactAddress').css({ "border": "", "background": "" }); });
+
+            ///*************************************** Events of Qualification & Skills **************************************************************
+            $('#ddlHighestEduLevel ').blur(function () { $('#ddlHighestEduLevel').css({ "border": "", "background": "" }); });
+            $('#ddlAcademicQualification').blur(function () { $('#ddlAcademicQualification').css({ "border": "", "background": "" }); });
+            $('#txtAcademicQualifDateAcquired').blur(function () { $('#txtAcademicQualifDateAcquired').css({ "border": "", "background": "" }); });
+            $('#ddlProfQualification ').blur(function () { $('#ddlProfQualification').css({ "border": "", "background": "" }); });
+            $('#txtProfQualifDateAcquired').blur(function () { $('#txtProfQualifDateAcquired').css({ "border": "", "background": "" }); });
+
+            ///*************************************** Events of Employment History ******************************************************************
+            $('#ddlEmploymentHist').blur(function () { $('#ddlEmploymentHist').css({ "border": "", "background": "" }); });
+            $('#txtLastEmployer').blur(function () { $('#txtLastEmployer').css({ "border": "", "background": "" }); });
+            $('#txtStartDate').blur(function () { $('#txtStartDate').css({ "border": "", "background": "" }); });
+            $('#txtEndDate').blur(function () { $('#txtEndDate').css({ "border": "", "background": "" }); });
+            $('#ddlEHRegion').blur(function () { $('#ddlEHRegion').css({ "border": "", "background": "" }); });
+            $('#ddlEHDistrict').blur(function () { $('#ddlEHDistrict').css({ "border": "", "background": "" }); });
+
+            $('#txtJobDuties').blur(function () { $('#txtJobDuties').css({ "border": "", "background": "" }); });
+
+            ///***************************************Work Preference  *******************************************************************************
+            $('#ddlWRegion').blur(function () { $('#ddlWRegion').css({ "border": "", "background": "" }); });
+            $('#ddlWDistrict').blur(function () { $('#ddlWDistrict').css({ "border": "", "background": "" }); });
+            $('#txtWTown').blur(function () { $('#txtWTown').css({ "border": "", "background": "" }); });
+
+           
+
+
+
+            litracyLevel = $('#lblLitracyLevel ').text();
+
+            if (litracyLevel == "Illiterate") {
+                $('#ddlAnyProfQualification option:eq(0)').text("No");
+                $('#ddlAnyProfQualification').attr("disabled", "disabled");
+                //Professional Qualification Controls
+                $('#Label27').slideUp();
+                $('#Label42').slideUp();
+                $('#ddlProfQualification').slideUp();
+                $('#Label28').slideUp();
+                $('#txtProfQualifDateAcquired').slideUp();
+
+                highesteducationallevel = "Not Applicable";
+                academicqualification = "Not Applicable";
+                dateAcademicacquired = "Not Applicable";
+                professionalQualification = "Not Applicable";
+                dateProfQualifacquired = "Not Applicable";
+
+                //highesteducationallevel = $('#ddlHighestEduLevel option:selected').text("Not Applicable");
+                //academicqualification = $('#ddlAcademicQualification option:selected').text("Not Applicable");
+                //dateAcademicacquired = $('#txtAcademicQualifDateAcquired').val("00/0000");
+                //professionalQualification = $('#ddlProfQualification option:selected').text("Not Applicable");
+                //dateProfQualifacquired = $('#txtProfQualifDateAcquired').val("00/0000");
+
+                //Academic Qualification Controls
+                $('#Label23').slideUp();
+                $('#ddlHighestEduLevel').slideUp();
+                $('#Label24').slideUp();
+                $('#ddlAcademicQualification').slideUp();
+                $('#Label25').slideUp();
+                $('#txtAcademicQualifDateAcquired').slideUp();
+                $("#Span16").slideUp();
+                $("#Span17").slideUp();
+                $("#Span18").slideUp();
+                $("#Span19").slideUp();
+                $("#Span20").slideUp();
+            }
+
+
+            $('#ddlMaritalStatus').change(function ()
+            {
+                var maritalstatus = $('#ddlMaritalStatus option:selected').text();
+                if (maritalstatus == "Married") {
+                    $('#txtSpouseName').slideDown();
+                    $('#Label10').slideDown();
+                    $("#SpnSpouseName").slideDown();
+                    $('#txtSpouseName').val("");
+
+                }
+                else {
+                    $('#txtSpouseName').slideUp();
+                    $('#Label10').slideUp();
+                    $("#SpnSpouseName").slideUp();
+                    $('#txtSpouseName').val("Not Applicable");
+                }
+            });
+
+
+
+            $('#ddlProfQualification').change(function ()
+            {
+                var option = $('#ddlProfQualification option:selected').text();
+                if (option == "------Other------") {
+                    $('#Label83').slideDown();
+                    $('#txtOtherProfQualification').slideDown();
+                    $('#txtOtherProfQualification').val("");
+                }
+                else {
+                    $('#Label83').slideUp();
+                    $('#txtOtherProfQualification').slideUp();
+                    $('#txtOtherProfQualification').val("Not Applicable");
+                }
+            });
+
+
+            $('#ddlAnyProfQualification').change(function ()
+            {
+                var option = $('#ddlAnyProfQualification option:selected').text();
+                if (option == "Yes") {
+                    $('#Label27').slideDown();
+                    $('#Label42').slideDown();
+
+                    $('#ddlProfQualification').slideDown();
+                    PopulateProfessionalQualifications();
+                    //$('#ddlProfQualification option:eq(0)').text("--Select Professional Qualification--");
+                    $("#Span19").slideDown();
+                    $('#Label28').slideDown();
+                    $('#txtProfQualifDateAcquired').slideDown();
+                    $("#Span20").slideDown();
+                    $('#txtProfQualifDateAcquired').val('');
+                    $('#Label83').slideDown();
+                    $('#txtOtherProfQualification').slideDown();
+                    $('#txtOtherProfQualification').val("");
+                }
+                else if (option == "No") {
+                    $('#Label27').slideUp();
+                    $('#Label42').slideUp();
+                    $('#ddlProfQualification').slideUp();
+                    $('#ddlProfQualification option:eq(0)').text("Not Applicable");
+                    $("#Span19").slideUp();
+                    $('#Label28').slideUp();
+                    $('#txtProfQualifDateAcquired').slideUp();
+                    $("#Span20").slideUp();
+                    $('#txtProfQualifDateAcquired').val('00/0000');
+                    $('#Label83').slideUp();
+                    $('#txtOtherProfQualification').slideUp();
+                    $('#txtOtherProfQualification').val("Not Applicable");
+                }
+            });
+
+
+
+            $('#ddlEmploymentHist').change(function ()
+            {
+                var yesno = $('#ddlEmploymentHist option:selected').text();
+                if (yesno == "Yes") {
+                    $('#Label31').slideDown();
+                    $('#txtLastEmployer').slideDown();
+                    $('#txtLastEmployer').val('');
+                    $("#Span1").slideDown();
+                    $('#Label32').slideDown();
+                    $('#txtStartDate').slideDown();
+                    $('#Label43').slideDown();
+                    $('#txtStartDate').val('');
+                    $("#Span2").slideDown();
+                    $('#Label33').slideDown();
+                    $('#txtEndDate').slideDown();
+                    $('#Label60').slideDown();
+                    $('#txtEndDate').val('');
+                    $("#Span3").slideDown();
+                    $('#Label34').slideDown();
+                    $('#ddlEHRegion').slideDown();
+                    $('#ddlEHRegion option:eq(0)').text('--Select Region--');
+                    $("#Span4").slideDown();
+                    $('#Label35').slideDown();
+                    $('#ddlEHDistrict').slideDown();
+                    $("#Span5").slideDown();
+                    $("#Span6").slideDown();
+                    $('#Label37').slideDown();
+                    $('#txtJobDuties').slideDown();
+                    $('#txtJobDuties').val('');
+                    $("#Span7").slideDown();
+                }
+                else {
+                    $('#Label31').slideUp();
+                    $('#txtLastEmployer').slideUp();
+                    $('#txtLastEmployer').val('Not Applicable');
+                    $("#Span1").slideUp();
+                    $('#Label32').slideUp();
+                    $('#txtStartDate').slideUp();
+                    $('#Label43').slideUp();
+                    $('#txtStartDate').val('00/00/0000');
+                    $("#Span2").slideUp();
+                    $('#Label33').slideUp();
+                    $('#txtEndDate').slideUp();
+
+                    $('#Label60').slideUp();
+                    $('#txtEndDate').val('00/00/0000');
+                    $("#Span3").slideUp();
+                    $('#Label34').slideUp();
+                    $('#ddlEHRegion').slideUp();
+                    $('#ddlEHRegion option:eq(0)').text('Not Applicable');
+                    $("#Span4").slideUp();
+                    $('#Label35').slideUp();
+                    $('#ddlEHDistrict').slideUp();
+                    $('#ddlEHDistrict option:eq(0)').text('Not Applicable');
+                    $("#Span5").slideUp();
+                    $("#Span6").slideUp();
+                    $('#Label37').slideUp();
+                    $('#txtJobDuties').slideUp();
+                    $('#txtJobDuties').val('Not Applicable');
+                    $("#Span7").slideUp();
+                }
+            });
+
+
+            $('#ddlIDType').change(function ()
+            {
+                var idtype = $('#ddlIDType option:selected').text();
+                if (idtype == "Voters ID") {
+                    $('#txtIdentificationNumber').mask("(99999)99999");
+                }
+                else if (idtype == "NHIS ID") {
+                    $('#txtIdentificationNumber').mask("99999999");
+                }
+                else if (idtype == "Passport") {
+                    $('#txtIdentificationNumber').mask("a9999999");
+                }
+                else if (idtype == "Driver's License") {
+                    $('#txtIdentificationNumber').unmask();
+                }
+            });
+
+
+
+            ///*******************************************Submitting New Applicant Data*******************************************
+            $("#btnSubmit").click(function ()
+            {
+                var data = {
+                    ApplicantDataObject:
+                   {
+                       ApplicantID: $('#lblApplicantID').text(),
+                       LiteracyLevel: $('#lblLitracylvl').text(),
+                       Title: $('#lblTitle').text(),
+                       Surname: $('#lblSurname').text(),
+                       FirstName: $('#lblFirstName').text(),
+                       Othernames: $('#lblOtherNames').text(),
+                       Gender: $('#lblGender').text(),
+                       DOB: $('#lblDOB').text(),
+                       PlaceOfBirth: $('#lblPlaceOfBirth').text(),
+                       MaritalStatus: $('#lblMaritalStatus').text(),
+                       SpouseName: $('#lblSpouseName').text(),
+                       IdentificationType: $('#lblIdentificationType').text(),
+                       IdentificationNumber: $('#lblIdentificationNumber').text(),
+                       LocationRegion: $('#lblRegion').text(),
+                       LocationDistrict: $('#lblDistrict').text(),
+                       LocationTown: $('#lblTown').text(),
+                       PostalAddress: $('#lblPostalAddress').text(),
+                       MobileNumber: $('#lblMobileNumber').text(),
+                       EmergencyContactPerson: $('#lblEmergencyContactName').text(),
+                       EmergencyContactNumber: $('#lblEmergencyContactNumber').text(),
+                       EmergencyContactAddress: $('#lblEmerencyContactAddress').text(),
+                       HighestEducationLevel: $('#lblHighestEduLevel').text(),
+                       AcademicQualification: $('#lblAcademicQualification').text(),
+                       AcademicDateAcquired: $('#lblAcademicDateAcquired').text(),
+                       ProfessionalQualification: $('#lblProfessionalQualification').text(),
+                       ProfDateAcquired: $('#lblProfDateAcquired').text(),
+                       OtherSkills: $('#lblOtherSkills').text(),
+                       LastEmployer: $('#lblLastEmployer').text(),
+                       StartDate: $('#lblStartDate').text(),
+                       EndDate: $('#lblEndate').text(),
+                       EmploymentRegion: $('#lblERegion').text(),
+                       EmploymentDistrict: $('#lblEDistrict').text(),
+                       JobDuties: $('#lblJobDuties').text(),
+                       WorkPreferenceRegion: $('#lblWRegion').text(),
+                       WorkPreferenceDistrict: $('#lblWDistrict').text(),
+                       WorkPreferenceTown: $('#lblWTown').text(),
+                       ModulePreference: $('#lblModuleSelected').text(),
+                       IsApprovedToDistrict: true,
+                       IsShortListed: false,
+                       IsPlacement: false,
+                       IsApprovedToRegion: false,
+                       IsApprovedToNational: false,
+                       IsLetterProcessed: false,
+                       IsArchived: false,
+                       IsPhotoUploaded: false,
+                       RegistrationStatus: 'Completed',
+                       StepCompleted: '6'
+                   }
+                };
+                $("#submitOutput").showLoading();
+                setTimeout(function ()
+                {
+
+                    $.ajax({
+                        url: "Register.aspx/SubmitNewApplication",
+                        data: JSON.stringify(data),
+                        datatype: "json",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (result)
+                        {
+                            $("#submitOutput").hideLoading();
+                            alert(result.d)
+                            window.location = "../public/Output.aspx?applicantID=" + $('#lblApplicantID').text();
+                        }
+                    });
+
+                }, 500);
+
+                return false;
+            });
+
+
+            $("#btnSave2").click(function ()
+            {
+                locationregion = $('#ddlRegion option:selected').text();
+                locationdistrict = $('#ddlDistrict option:selected').text();
+                locationtown = $('#txtTown').val();
+
+                if ($('#ddlRegion option:selected').text() == "--Select Region--") {
+                    $('#ddlRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlDistrict option:selected').text() == "Please select") {
+                    $('#ddlDistrict').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (locationtown.length == 0) {
+                    $('#txtTown').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else {
+                    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    // >>>>>>>>>>>>>>>>>>>>>>>>Save And Continue later Step Two >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    var ans = confirm('Are you sure you want to save and continue later?');
+                    if (ans == true) {
+                        var data = {
+                         ApplicantDataObject:
+                        {
+                          ApplicantID: $('#lblApplicantID').html(),
+                          LiteracyLevel: $('#lblLitracyLevel').html(),
+                          Title: $('#ddlTitle option:selected').text(),
+                          Surname: $('#txtSurname').val(),
+                          FirstName: $('#txtFirstName').val(),
+                          Othernames: $('#txtOtherNames').val(),
+                          Gender: $('#ddlGender').val(),
+                          DOB: $('#txtDateOfBirth').val(),
+                          PlaceOfBirth: $('#txtPlaceOfBirth').val(),
+                          MaritalStatus: $('#ddlMaritalStatus option:selected').text(),
+                          SpouseName: $('#txtSpouseName').val(),
+                          IdentificationType: $('#ddlIDType option:selected').text(),
+                          IdentificationNumber: $('#txtIdentificationNumber').val(),
+                          LocationRegion: $('#ddlRegion option:selected').text(),
+                          LocationDistrict: $('#ddlDistrict option:selected').text(),
+                          LocationTown: $('#txtTown').val(),
+                          ModulePreference: $('#lblModulePreference').html(),
+                          IsApprovedToDistrict: true,
+                          IsShortListed: false,
+                          IsPlacement: false,
+                          IsApprovedToRegion: false,
+                          IsApprovedToNational: false,
+                          IsLetterProcessed: false,
+                          IsArchived: false,
+                          IsPhotoUploaded: false,
+                          RegistrationStatus: 'InComplete',
+                          StepCompleted: '2'
+                      }
+                        };
+                        $("#StepTwo").showLoading();
+                        setTimeout(function ()
+                        {
+                            $.ajax({
+                                url: "Register.aspx/SubmitStep2",
+                                data: JSON.stringify(data),
+                                datatype: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (result)
+                                {
+                                    $("#StepTwo").hideLoading();
+                                    alert(result.d)
+                                    window.location = "IncompleteEntry.aspx?applicantID=" + $('#lblApplicantID').html();
+                                }
+                            });
+                        }, 500);
+                        return false;
+                    }
+                    else {
+                        //Do nothing
+                    }
+                }
+
+            });
+
+
+            $("#btnSave3").click(function ()
+            {
+                postaladdress = $('#txtPostalAddress').val();
+                mobileNumber = $('#txtMobileNo').val();
+                emergencycontactname = $('#txtEmergencyContactName').val();
+                emergencycontactnumber = $('#txtEmergencyContact').val();
+                emergencycontactaddress = $('#txtEmergencyContactAddress').val();
+
+
+                if (mobileNumber.length == 0) {
+                    $('#txtMobileNo').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (emergencycontactname.length == 0) {
+                    $('#txtEmergencyContactName').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (emergencycontactnumber.length == 0) {
+                    $('#txtEmergencyContact').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else {
+                    // >>>>>>>>>>>>>>>>>>>>>>>>Save And Continue later Step Three >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    var ans = confirm('Are you sure you want to save and continue later?');
+                    if (ans == true) {
+                        var data = {
+                            ApplicantDataObject:
+                      {
+                          ApplicantID: $('#lblApplicantID').html(),
+                          LiteracyLevel: $('#lblLitracyLevel').html(),
+                          Title: $('#ddlTitle option:selected').text(),
+                          Surname: $('#txtSurname').val(),
+                          FirstName: $('#txtFirstName').val(),
+                          Othernames: $('#txtOtherNames').val(),
+                          Gender: $('#ddlGender').val(),
+                          DOB: $('#txtDateOfBirth').val(),
+                          PlaceOfBirth: $('#txtPlaceOfBirth').val(),
+                          MaritalStatus: $('#ddlMaritalStatus option:selected').text(),
+                          SpouseName: $('#txtSpouseName').val(),
+                          IdentificationType: $('#ddlIDType option:selected').text(),
+                          IdentificationNumber: $('#txtIdentificationNumber').val(),
+                          LocationRegion: $('#ddlRegion option:selected').text(),
+                          LocationDistrict: $('#ddlDistrict option:selected').text(),
+                          LocationTown: $('#txtTown').val(),
+                          PostalAddress: $('#txtPostalAddress').val(),
+                          MobileNumber: $('#txtMobileNo').val(),
+                          EmergencyContactPerson: $('#txtEmergencyContactName').val(),
+                          EmergencyContactNumber: $('#txtEmergencyContact').val(),
+                          EmergencyContactAddress: $('#txtEmergencyContactAddress').val(),
+                          ModulePreference: $('#lblModulePreference ').html(),
+                          IsApprovedToDistrict: true,
+                          IsShortListed: false,
+                          IsPlacement: false,
+                          IsApprovedToRegion: false,
+                          IsApprovedToNational: false,
+                          IsLetterProcessed: false,
+                          IsArchived: false,
+                          IsPhotoUploaded: false,
+                          RegistrationStatus: 'InComplete',
+                          StepCompleted: '3'
+                      }
+                        };
+                        $("#StepThree").showLoading();
+                        setTimeout(function ()
+                        {
+                            $.ajax({
+                                url: "Register.aspx/SubmitStep3",
+                                data: JSON.stringify(data),
+                                datatype: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (result)
+                                {
+                                    $("#StepThree").hideLoading();
+                                    alert(result.d)
+                                    window.location = "IncompleteEntry.aspx?applicantID=" + $('#lblApplicantID').html();
+                                }
+                            });
+                        }, 500);
+                        return false;
+                    }
+                    else {
+                        //Do nothing
+                    }
+                }
+
+            });
+
+
+            $("#btnSave4").click(function ()
+            {
+                if ($('#lblLitracyLevel ').text() == "Illiterate") {
+                    otherskills = $('#txtOtherSkills').val();
+                }
+                else if ($('#lblLitracyLevel ').text() == "Literate") {
+                    highesteducationallevel = $('#ddlHighestEduLevel option:selected').text();
+                    academicqualification = $('#ddlAcademicQualification option:selected').text();
+                    dateAcademicacquired = $('#txtAcademicQualifDateAcquired').val();
+                    professionalQualification = $('#ddlProfQualification option:selected').text();
+                    dateProfQualifacquired = $('#txtProfQualifDateAcquired').val();
+                    otherskills = $('#txtOtherSkills').val();
+
+                    if ($('#ddlHighestEduLevel option:selected').text() == "--Select--") {
+                        $('#ddlHighestEduLevel').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if ($('#ddlAcademicQualification option:selected').text() == "--Select Academic Qualification--") {
+                        $('#ddlAcademicQualification').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if (dateAcademicacquired.length == 0) {
+                        $('#txtAcademicQualifDateAcquired').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if ($('#ddlAnyProfQualification option:selected').text() == "--Select--") {
+                        $('#ddlAnyProfQualification').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if ($('#ddlProfQualification option:selected').text() == "--Select Professional Qualification--") {
+                        $('#ddlProfQualification').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if (dateProfQualifacquired == 0) {
+                        $('#txtProfQualifDateAcquired').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else {
+                        $('#ddlAnyProfQualification').css({ "border": "", "background": "" });
+                        // >>>>>>>>>>>>>>>>>>>>>>>>Save And Continue later Step Four >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                        var ans = confirm('Are you sure you want to save and continue later?');
+                        if (ans == true) {
+                            var data = {
+                                ApplicantDataObject:
+                        {
+                            ApplicantID: $('#lblApplicantID').html(),
+                            LiteracyLevel: $('#lblLitracyLevel').html(),
+                            Title: $('#ddlTitle option:selected').text(),
+                            Surname: $('#txtSurname').val(),
+                            FirstName: $('#txtFirstName').val(),
+                            Othernames: $('#txtOtherNames').val(),
+                            Gender: $('#ddlGender').val(),
+                            DOB: $('#txtDateOfBirth').val(),
+                            PlaceOfBirth: $('#txtPlaceOfBirth').val(),
+                            MaritalStatus: $('#ddlMaritalStatus option:selected').text(),
+                            SpouseName: $('#txtSpouseName').val(),
+                            IdentificationType: $('#ddlIDType option:selected').text(),
+                            IdentificationNumber: $('#txtIdentificationNumber').val(),
+                            LocationRegion: $('#ddlRegion option:selected').text(),
+                            LocationDistrict: $('#ddlDistrict option:selected').text(),
+                            LocationTown: $('#txtTown').val(),
+                            PostalAddress: $('#txtPostalAddress').val(),
+                            MobileNumber: $('#txtMobileNo').val(),
+                            EmergencyContactPerson: $('#txtEmergencyContactName').val(),
+                            EmergencyContactNumber: $('#txtEmergencyContact').val(),
+                            EmergencyContactAddress: $('#txtEmergencyContactAddress').val(),
+                            HighestEducationLevel: $('#ddlHighestEduLevel option:selected').text(),
+                            AcademicQualification: $('#ddlAcademicQualification option:selected').text(),
+                            AcademicDateAcquired: $('#txtAcademicQualifDateAcquired').val(),
+                            ProfessionalQualification: $('#ddlProfQualification option:selected').text(),
+                            ProfDateAcquired: $('#txtProfQualifDateAcquired').val(),
+                            OtherSkills: $('#txtOtherSkills').val(),
+                            ModulePreference: $('#lblModulePreference ').html(),
+                            IsApprovedToDistrict: true,
+                            IsShortListed: false,
+                            IsPlacement: false,
+                            IsApprovedToRegion: false,
+                            IsApprovedToNational: false,
+                            IsLetterProcessed: false,
+                            IsArchived: false,
+                            IsPhotoUploaded: false,
+                            RegistrationStatus: 'InComplete',
+                            StepCompleted: '4'
+                        }
+                            };
+                            $("#StepFour").showLoading();
+                            setTimeout(function ()
+                            {
+                                $.ajax({
+                                    url: "Register.aspx/SubmitStep4",
+                                    data: JSON.stringify(data),
+                                    datatype: "json",
+                                    type: "POST",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (result)
+                                    {
+                                        $("#StepFour").hideLoading();
+                                        alert(result.d)
+                                        window.location = "IncompleteEntry.aspx?applicantID=" + $('#lblApplicantID').html();
+                                    }
+                                });
+                            }, 500);
+                            return false;
+                        }
+                        else {
+                            //Do nothing
+                        }
+
+                    }
+                }
+            });
+
+
+            $("#btnSave5").click(function ()
+            {
+                if ($('#ddlEmploymentHist option:selected').text() == "--Select--") {
+                    $('#ddlEmploymentHist').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+
+                anyemploymenthistory = $('#ddlEmploymentHist option:selected').text();
+
+                if (anyemploymenthistory == "Yes") {
+                    lastemployer = $('#txtLastEmployer').val();
+                    startdate = $('#txtStartDate').val();
+                    enddate = $('#txtEndDate ').val();
+                    eregion = $('#ddlEHRegion option:selected').text();
+                    edistrict = $('#ddlEHDistrict option:selected').text();
+                    jobduties = $('#txtJobDuties').val();
+
+                    if (lastemployer.length == 0) {
+                        $('#txtLastEmployer').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if (startdate.length == 0) {
+                        $('#txtStartDate').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if (enddate.length == 0) {
+                        $('#txtEndDate ').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if ($('#ddlEHRegion option:selected').text() == "--Select Region--") {
+                        $('#ddlEHRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if ($('#ddlEHDistrict option:selected').text() == "Please select") {
+                        $('#ddlEHDistrict ').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else if (jobduties.length == 0) {
+                        $('#txtJobDuties').css({ "border": "1px solid red", "background": "#FFCECE" });
+                    }
+                    else {
+                        // >>>>>>>>>>>>>>>>>>>>>>>>Save And Continue later Step Five >>>>>>>>>>>>>>>>>>>>>
+                        var ans = confirm('Are you sure you want to save and continue later?');
+                        if (ans == true) {
+
+                            var data = {
+                                ApplicantDataObject:
+                          {
+                             ApplicantID: $('#lblApplicantID').html(),
+                             LiteracyLevel: $('#lblLitracyLevel').html(),
+                             Title: $('#ddlTitle option:selected').text(),
+                             Surname: $('#txtSurname').val(),
+                             FirstName: $('#txtFirstName').val(),
+                             Othernames: $('#txtOtherNames').val(),
+                             Gender: $('#ddlGender').val(),
+                             DOB: $('#txtDateOfBirth').val(),
+                             PlaceOfBirth: $('#txtPlaceOfBirth').val(),
+                             MaritalStatus: $('#ddlMaritalStatus option:selected').text(),
+                             SpouseName: $('#txtSpouseName').val(),
+                             IdentificationType: $('#ddlIDType option:selected').text(),
+                             IdentificationNumber: $('#txtIdentificationNumber').val(),
+                             LocationRegion: $('#ddlRegion option:selected').text(),
+                             LocationDistrict: $('#ddlDistrict option:selected').text(),
+                             LocationTown: $('#txtTown').val(),
+                             PostalAddress: $('#txtPostalAddress').val(),
+                             MobileNumber: $('#txtMobileNo').val(),
+                             EmergencyContactPerson: $('#txtEmergencyContactName').val(),
+                             EmergencyContactNumber: $('#txtEmergencyContact').val(),
+                             EmergencyContactAddress: $('#txtEmergencyContactAddress').val(),
+                             HighestEducationLevel: $('#ddlHighestEduLevel option:selected').text(),
+                             AcademicQualification: $('#ddlAcademicQualification option:selected').text(),
+                             AcademicDateAcquired: $('#txtAcademicQualifDateAcquired').val(),
+                             ProfessionalQualification: $('#ddlProfQualification option:selected').text(),
+                             ProfDateAcquired: $('#txtProfQualifDateAcquired').val(),
+                             OtherSkills: $('#txtOtherSkills').val(),
+                             LastEmployer: $('#txtLastEmployer').val(),
+                             StartDate: $('#txtStartDate').val(),
+                             EndDate: $('#txtEndDate').val(),
+                             EmploymentRegion: $('#ddlEHRegion option:selected').text(),
+                             EmploymentDistrict: $('#ddlEHDistrict option:selected').text(),
+                             JobDuties: $('#txtJobDuties').val(),
+                             ModulePreference: $('#lblModulePreference').html(),
+                             IsApprovedToDistrict: true,
+                             IsShortListed: false,
+                             IsPlacement: false,
+                             IsApprovedToRegion: false,
+                             IsApprovedToNational: false,
+                             IsLetterProcessed: false,
+                             IsArchived: false,
+                             IsPhotoUploaded: false,
+                             RegistrationStatus: 'InComplete',
+                             StepCompleted: '5'
+                         }
+                            };
+                            $("#StepFive").showLoading();
+                            setTimeout(function ()
+                            {
+                                $.ajax({
+                                    url: "Register.aspx/SubmitStep5",
+                                    data: JSON.stringify(data),
+                                    datatype: "json",
+                                    type: "POST",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (result)
+                                    {
+                                        $("#StepFive").hideLoading();
+                                        alert(result.d)
+                                        window.location = "IncompleteEntry.aspx?applicantID=" + $('#lblApplicantID').html();
+                                    }
+                                });
+                            }, 500);
+                            return false;
+                        }
+                        else {
+                            //Do nothing
+                        }
+                    }
+                }
+                else if (anyemploymenthistory == "No") {
+                    lastemployer = $('#txtLastEmployer').val();
+                    startdate = $('#txtStartDate').val();
+                    enddate = $('#txtEndDate ').val();
+                    eregion = $('#ddlEHRegion option:selected').text();
+                    edistrict = $('#ddlEHDistrict option:selected').text();
+                    jobduties = $('#txtJobDuties').val();
+
+                    // >>>>>>>>>>>>>>>>>>>>>>>>Save And Continue later Step Five >>>>>>>>>>>>>>>>>>>>>>
+                    var ans = confirm('Are you sure you want to save and continue later?');
+                    if (ans == true) {
+                        var data = {
+                            ApplicantDataObject:
+                         {
+                             ApplicantID: $('#lblApplicantID').html(),
+                             LiteracyLevel: $('#lblLitracyLevel').html(),
+                             ModulePreference: $('#lblModulePreference ').html(),
+                             Title: $('#ddlTitle option:selected').text(),
+                             Surname: $('#txtSurname').val(),
+                             FirstName: $('#txtFirstName').val(),
+                             Othernames: $('#txtOtherNames').val(),
+                             Gender: $('#ddlGender').val(),
+                             DOB: $('#txtDateOfBirth').val(),
+                             PlaceOfBirth: $('#txtPlaceOfBirth').val(),
+                             MaritalStatus: $('#ddlMaritalStatus option:selected').text(),
+                             SpouseName: $('#txtSpouseName').val(),
+                             IdentificationType: $('#ddlIDType option:selected').text(),
+                             IdentificationNumber: $('#txtIdentificationNumber').val(),
+                             LocationRegion: $('#ddlRegion option:selected').text(),
+                             LocationDistrict: $('#ddlDistrict option:selected').text(),
+                             LocationTown: $('#txtTown').val(),
+                             PostalAddress: $('#txtPostalAddress').val(),
+                             MobileNumber: $('#txtMobileNo').val(),
+                             EmergencyContactPerson: $('#txtEmergencyContactName').val(),
+                             EmergencyContactNumber: $('#txtEmergencyContact').val(),
+                             EmergencyContactAddress: $('#txtEmergencyContactAddress').val(),
+                             HighestEducationLevel: $('#ddlHighestEduLevel option:selected').text(),
+                             AcademicQualification: $('#ddlAcademicQualification option:selected').text(),
+                             AcademicDateAcquired: $('#txtAcademicQualifDateAcquired').val(),
+                             ProfessionalQualification: $('#ddlProfQualification option:selected').text(),
+                             ProfDateAcquired: $('#txtProfQualifDateAcquired').val(),
+                             OtherSkills: $('#txtOtherSkills').val(),
+                             LastEmployer: $('#txtLastEmployer').val(),
+                             StartDate: $('#txtStartDate').val(),
+                             EndDate: $('#txtEndDate').val(),
+                             EmploymentRegion: $('#ddlEHRegion option:selected').text(),
+                             EmploymentDistrict: $('#ddlEHDistrict option:selected').text(),
+                             JobDuties: $('#txtJobDuties').val(),
+                             IsApprovedToDistrict: true,
+                             IsShortListed: false,
+                             IsPlacement: false,
+                             IsApprovedToRegion: false,
+                             IsApprovedToNational: false,
+                             IsLetterProcessed: false,
+                             IsArchived: false,
+                             IsPhotoUploaded: false,
+                             RegistrationStatus: 'InComplete',
+                             StepCompleted: '5'
+                         }
+                        };
+                        $("#StepFive").showLoading();
+                        setTimeout(function ()
+                        {
+                            $.ajax({
+                                url: "Register.aspx/SubmitStep5",
+                                data: JSON.stringify(data),
+                                datatype: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (result)
+                                {
+                                    $("#StepFive").hideLoading();
+                                    alert(result.d)
+                                    window.location = "IncompleteEntry.aspx?applicantID=" + $('#lblApplicantID').html();
+                                }
+                            });
+                        }, 500);
+                        return false;
+                    }
+                    else {
+                        //Do nothing
+                    }
+
+                }
+            });
+
+
+
+            $("#btnSave6").click(function ()
+            {
+
+                wregion = $('#ddlWRegion option:selected').text();
+                wdistrict = $('#ddlWDistrict option:selected').text();
+                wtown = $('#txtWTown').val();
+               
+
+                if ($('#ddlWRegion option:selected').text() == "--Select Region--") {
+                    $('#ddlWRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlWDistrict option:selected').text() == "Please select") {
+                    $('#ddlWDistrict ').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlWDistrict option:selected').text() == "Please select") {
+                    $('#ddlWDistrict ').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (wtown.length == 0) {
+                    $('#txtWTown').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+              
+                else {
+                    var ans = confirm('Are you sure you want to save and continue later?');
+                    if (ans == true) {
+                        var data = {
+                            ApplicantDataObject:
+                         {
+                             ApplicantID: $('#lblApplicantID').html(),
+                             LiteracyLevel: $('#lblLitracyLevel').html(),
+                             Title: $('#ddlTitle option:selected').text(),
+                             Surname: $('#txtSurname').val(),
+                             FirstName: $('#txtFirstName').val(),
+                             Othernames: $('#txtOtherNames').val(),
+                             Gender: $('#ddlGender').val(),
+                             DOB: $('#txtDateOfBirth').val(),
+                             PlaceOfBirth: $('#txtPlaceOfBirth').val(),
+                             MaritalStatus: $('#ddlMaritalStatus option:selected').text(),
+                             SpouseName: $('#txtSpouseName').val(),
+                             IdentificationType: $('#ddlIDType option:selected').text(),
+                             IdentificationNumber: $('#txtIdentificationNumber').val(),
+                             LocationRegion: $('#ddlRegion option:selected').text(),
+                             LocationDistrict: $('#ddlDistrict option:selected').text(),
+                             LocationTown: $('#txtTown').val(),
+                             PostalAddress: $('#txtPostalAddress').val(),
+                             MobileNumber: $('#txtMobileNo').val(),
+                             EmergencyContactPerson: $('#txtEmergencyContactName').val(),
+                             EmergencyContactNumber: $('#txtEmergencyContact').val(),
+                             EmergencyContactAddress: $('#txtEmergencyContactAddress').val(),
+                             HighestEducationLevel: $('#ddlHighestEduLevel option:selected').text(),
+                             AcademicQualification: $('#ddlAcademicQualification option:selected').text(),
+                             AcademicDateAcquired: $('#txtAcademicQualifDateAcquired').val(),
+                             ProfessionalQualification: $('#ddlProfQualification option:selected').text(),
+                             ProfDateAcquired: $('#txtProfQualifDateAcquired').val(),
+                             OtherSkills: $('#txtOtherSkills').val(),
+                             LastEmployer: $('#txtLastEmployer').val(),
+                             StartDate: $('#txtStartDate').val(),
+                             EndDate: $('#txtEndDate').val(),
+                             EmploymentRegion: $('#ddlEHRegion option:selected').text(),
+                             EmploymentDistrict: $('#ddlEHDistrict option:selected').text(),
+                             JobDuties: $('#txtJobDuties').val(),
+                             WorkPreferenceRegion: $('#ddlWRegion option:selected').text(),
+                             WorkPreferenceDistrict: $('#ddlWDistrict option:selected').text(),
+                             WorkPreferenceTown: $('#txtWTown').val(),
+                             ModulePreference: $('#lblModulePreference ').html(),
+                             IsApprovedToDistrict: true,
+                             IsShortListed: false,
+                             IsPlacement: false,
+                             IsApprovedToRegion: false,
+                             IsApprovedToNational: false,
+                             IsLetterProcessed: false,
+                             IsArchived: false,
+                             IsPhotoUploaded: false,
+                             RegistrationStatus: 'InComplete',
+                             StepCompleted: '6'
+                         }
+                        };
+                        $("#StepSix").showLoading();
+                        setTimeout(function ()
+                        {
+                            $.ajax({
+                                url: "Register.aspx/SubmitStep6",
+                                data: JSON.stringify(data),
+                                datatype: "json",
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                success: function (result)
+                                {
+                                    $("#StepSix").hideLoading();
+                                    alert(result.d)
+                                    window.location = "IncompleteEntry.aspx?applicantID=" + $('#lblApplicantID').html();
+                                },
+                                error: function ajaxError(result)
+                                {
+                                    alert(result.status + ' : ' + result.statusText);
+                                }
+                            });
+                        }, 500);
+                        return false;
+                    }
+                    else 
+                    {
+                        //Do nothing
+                    }
+
+                }
+            });
+
+
+
+
+
+
+
+        });
+
+        ///******************************************* End of document.ready ******************************************* 
+
+
+
+        ///******************************************* Processing step 1 of 6 ******************************************* 
+
+        function processPhase1()
+        {
+            litracyLevel = $('#lblLitracyLevel ').text();
+            wmodule = $('#lblModulePreference ').text();
+            title = $('#ddlTitle option:selected').text();
+            surname = $('#txtSurname').val();
+            firstname = $('#txtFirstName').val();
+            othernames = $('#txtOtherNames').val();
+            gender = $('#ddlGender').val();
+            dob = $('#txtDateOfBirth').val();
+            placeofbirth = $('#txtPlaceOfBirth').val();
+            maritalstatus = $('#ddlMaritalStatus').val();
+            spousename = $('#txtSpouseName').val();
+            identificationtype = $('#ddlIDType').val();
+            identificationnumber = $('#txtIdentificationNumber').val();
+
+            if ($('#ddlTitle option:selected').text() == "--Select--") {
+                $('#ddlTitle').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (surname.length == 0) {
+                $('#txtSurname').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (firstname.length == 0) {
+                $('#txtFirstName').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#ddlGender option:selected').text() == "--Select--") {
+                $('#ddlGender').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#txtDateOfBirth').val().trim() == "") {
+                $('#txtDateOfBirth').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (placeofbirth.length == 0) {
+                $('#txtPlaceOfBirth').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#ddlMaritalStatus option:selected').text() == "--Select--") {
+                $('#ddlMaritalStatus').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (spousename.length == 0) {
+                $('#txtSpouseName').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#ddlIDType option:selected').text() == "--Select--") {
+                $('#ddlIDType').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (identificationnumber.length == "") {
+                $('#txtIdentificationNumber').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else {
+                maritalstatus = $('#ddlMaritalStatus option:selected').text();
+                identificationtype = $('#ddlIDType option:selected').text();
+                // >>>>>>>>>>>>>>>>>>>>>>>>Code to move to next phase 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                $("#StepOne").css({ "display": "none" });
+                $("#StepTwo").css({ "display": "block" });
+
+                _("progressbar").value = 16.6;
+
+            }
+        }
+
+
+        ///******************************************* Processing step 2 of 6 ******************************************* 
+        function processPhase2() 
+        {
+
+            locationregion = $('#ddlRegion option:selected').text();
+            locationdistrict = $('#ddlDistrict option:selected').text();
+            locationtown = $('#txtTown').val();
+
+            if ($('#ddlRegion option:selected').text() == "--Select Region--") {
+                $('#ddlRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#ddlDistrict option:selected').text() == "Please select") {
+                $('#ddlDistrict').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (locationtown.length == 0) {
+                $('#txtTown').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else {
+                // >>>>>>>>>>>>>>>>>>>>>>>>Code to move to next phase 3 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                $("#StepTwo").css({ "display": "none" });
+                $("#StepThree").css({ "display": "block" });
+                _("progressbar").value = 33.2;
+            }
+        }
+
+
+        ///******************************************* Processing step 3 of 6 *******************************************
+        function processPhase3() {
+
+            postaladdress = $('#txtPostalAddress').val();
+            mobileNumber = $('#txtMobileNo').val();
+            emergencycontactname = $('#txtEmergencyContactName').val();
+            emergencycontactnumber = $('#txtEmergencyContact').val();
+            emergencycontactaddress = $('#txtEmergencyContactAddress').val();
+
+
+            if (mobileNumber.length == 0) {
+                $('#txtMobileNo').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (emergencycontactname.length == 0) {
+                $('#txtEmergencyContactName').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (emergencycontactnumber.length == 0) {
+                $('#txtEmergencyContact').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else 
+            {
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>Code to move to next phase 4 >>>>>>>>>>>>>>>>>>>>>>>
+                $("#StepThree").css({ "display": "none" });
+                $("#StepFour").css({ "display": "block" });
+                _("progressbar").value = 49.8;
+            }
+        }
+
+
+        ///******************************************* Processing step 4 of 6 *******************************************
+        function processPhase4() {
+
+            if ($('#lblLitracyLevel ').text() == "Illiterate") {
+                otherskills = $('#txtOtherSkills').val();
+                $("#StepFour").css({ "display": "none" });
+                $("#StepFive").css({ "display": "block" });
+                _("progressbar").value = 66.4;
+            }
+            else if ($('#lblLitracyLevel ').text() == "Literate") {
+
+                highesteducationallevel = $('#ddlHighestEduLevel option:selected').text();
+                academicqualification = $('#ddlAcademicQualification option:selected').text();
+                dateAcademicacquired = $('#txtAcademicQualifDateAcquired').val();
+                professionalQualification = $('#ddlProfQualification option:selected').text();
+                dateProfQualifacquired = $('#txtProfQualifDateAcquired').val();
+                otherskills = $('#txtOtherSkills').val();
+
+                if ($('#ddlHighestEduLevel option:selected').text() == "--Select--") {
+                    $('#ddlHighestEduLevel').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlAcademicQualification option:selected').text() == "--Select Academic Qualification--") {
+                    $('#ddlAcademicQualification').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (dateAcademicacquired.length == 0) {
+                    $('#txtAcademicQualifDateAcquired').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlAnyProfQualification option:selected').text() == "--Select--") {
+                    $('#ddlAnyProfQualification').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlProfQualification option:selected').text() == "--Select Professional Qualification--") {
+                    $('#ddlProfQualification').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (dateProfQualifacquired == 0) {
+                    $('#txtProfQualifDateAcquired').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+
+                else {
+                    $('#ddlAnyProfQualification').css({ "border": "", "background": "" });
+
+                    $("#StepFour").css({ "display": "none" });
+                    $("#StepFive").css({ "display": "block" });
+                    _("progressbar").value = 66.4;
+                }
+            }
+        }
+
+
+        ///******************************************* Processing step 5 of 6 *******************************************
+        function processPhase5() {
+
+            if ($('#ddlEmploymentHist option:selected').text() == "--Select--") {
+                $('#ddlEmploymentHist').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+
+            anyemploymenthistory = $('#ddlEmploymentHist option:selected').text();
+
+            if (anyemploymenthistory == "Yes") {
+
+                lastemployer = $('#txtLastEmployer').val();
+                startdate = $('#txtStartDate').val();
+                enddate = $('#txtEndDate ').val();
+                eregion = $('#ddlEHRegion option:selected').text();
+                edistrict = $('#ddlEHDistrict option:selected').text();
+                jobduties = $('#txtJobDuties').val();
+
+                if (lastemployer.length == 0) {
+                    $('#txtLastEmployer').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (startdate.length == 0) {
+                    $('#txtStartDate').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (enddate.length == 0) {
+                    $('#txtEndDate ').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlEHRegion option:selected').text() == "--Select Region--") {
+                    $('#ddlEHRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if ($('#ddlEHDistrict option:selected').text() == "Please select") {
+                    $('#ddlEHDistrict ').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else if (jobduties.length == 0) {
+                    $('#txtJobDuties').css({ "border": "1px solid red", "background": "#FFCECE" });
+                }
+                else {
+                    // >>>>>>>>>>>>>>>>>>>>>>>>Code to move to next phase 6 >>>>>>>>>>>>>>>>>>>>>>>
+                    $("#StepFive").css({ "display": "none" });
+                    $("#StepSix").css({ "display": "block" });
+
+                    _("progressbar").value = 83;
+
+                }
+            }
+            else if (anyemploymenthistory == "No") {
+                lastemployer = $('#txtLastEmployer').val();
+                startdate = $('#txtStartDate').val();
+                enddate = $('#txtEndDate ').val();
+                eregion = $('#ddlEHRegion option:selected').text();
+                edistrict = $('#ddlEHDistrict option:selected').text();
+                jobduties = $('#txtJobDuties').val();
+
+                // >>>>>>>>>>>>>>>>>>>>>>>>Code to move to next phase 6 >>>>>>>>>>>>>>>>>>>>>>>
+                $("#StepFive").css({ "display": "none" });
+                $("#StepSix").css({ "display": "block" });
+                _("progressbar").value = 83;
+            }
+        }
+
+        ///******************************************* Processing step 6 of 6 *******************************************
+        function processPhase6() {
+
+            wregion = $('#ddlWRegion option:selected').text();
+            wdistrict = $('#ddlWDistrict option:selected').text();
+            wtown = $('#txtWTown').val();
+           
+
+            if ($('#ddlWRegion option:selected').text() == "--Select Region--") {
+                $('#ddlWRegion').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#ddlWDistrict option:selected').text() == "Please select") {
+                $('#ddlWDistrict ').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if ($('#ddlWDistrict option:selected').text() == "Please select") {
+                $('#ddlWDistrict ').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+            else if (wtown.length == 0) {
+                $('#txtWTown').css({ "border": "1px solid red", "background": "#FFCECE" });
+            }
+           
+            else 
+            {
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Assigning Variables >>>>>>>>>>>>>>>>>>>>>>>
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Basic Personal >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                $('#lblLitracylvl').text(litracyLevel);
+                $('#lblTitle').text(title);
+                $('#lblSurname').text(surname);
+                $('#lblFirstName').text(firstname);
+                $('#lblOtherNames').text(othernames);
+                $('#lblGender').text(gender);
+                $('#lblDOB').text(dob);
+                $('#lblPlaceOfBirth').text(placeofbirth);
+                $('#lblMaritalStatus').text(maritalstatus);
+                $('#lblSpouseName').text(spousename);
+                $('#lblIdentificationType').text(identificationtype);
+                $('#lblIdentificationNumber').text(identificationnumber);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Location Details >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                $('#lblRegion').text(locationregion);
+                $('#lblDistrict').text(locationdistrict);
+                $('#lblTown').text(locationtown);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Contact Information >>>>>>>>>>>>>>>>>>>>>>>>>>
+                $('#lblPostalAddress').text(postaladdress);
+                $('#lblMobileNumber').text(mobileNumber);
+                $('#lblEmergencyContactName').text(emergencycontactname);
+                $('#lblEmergencyContactNumber').text(emergencycontactnumber);
+                $('#lblEmerencyContactAddress').text(emergencycontactaddress);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Qualification & Skills >>>>>>>>>>>>>>>>>>>>>>>>>>
+                $('#lblHighestEduLevel').text(highesteducationallevel);
+                $('#lblAcademicQualification').text(academicqualification);
+                $('#lblAcademicDateAcquired').text(dateAcademicacquired);
+                $('#lblProfessionalQualification').text(professionalQualification);
+                $('#lblProfDateAcquired').text(dateProfQualifacquired);
+                $('#lblOtherSkills').text(otherskills);
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Employment History >>>>>>>>>>>>>>>>>>>>>>>>>>
+                $('#lblLastEmployer').text(lastemployer)
+                $('#lblStartDate').text(startdate)
+                $('#lblEndate').text(enddate)
+                $('#lblERegion').text(eregion)
+                $('#lblEDistrict').text(edistrict);
+                $('#lblJobDuties').text(jobduties)
+
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Work Preference >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                $('#lblWRegion').text(wregion);
+                $('#lblWDistrict').text(wdistrict);
+                $('#lblWTown').text(wtown);
+                $('#lblModuleSelected').text(wmodule);
+            
+                //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Code to move to next phase 7 >>>>>>>>>>>>>>>>>>>>>>>
+                $("#StepSix").css({ "display": "none" });
+                $("#StepSeven").css({ "display": "block" });
+                _("progressbar").value = 100;
+            }
+
+        }
+
+        function processPhase7Prev() {
+
+            $("#StepSeven").css({ "display": "none" });
+            $("#StepSix").css({ "display": "block" });
+            _("progressbar").value = 83;
+        }
+
+        function processPhase6Prev() {
+            $("#StepSix").css({ "display": "none" });
+            $("#StepFive").css({ "display": "block" });
+            _("progressbar").value = 66.4;
+        }
+
+        function processPhase5Prev() {
+            $("#StepFive").css({ "display": "none" });
+            $("#StepFour").css({ "display": "block" });
+            _("progressbar").value = 49.8;
+        }
+
+        function processPhase4Prev() {
+            $("#StepFour").css({ "display": "none" });
+            $("#StepThree").css({ "display": "block" });
+            _("progressbar").value = 33.2;
+        }
+
+        function processPhase3Prev() {
+            $("#StepThree").css({ "display": "none" });
+            $("#StepTwo").css({ "display": "block" });
+            _("progressbar").value = 16.6;
+        }
+
+        function processPhase2Prev() {
+            $("#StepTwo").css({ "display": "none" });
+            $("#StepOne").css({ "display": "block" });
+            _("progressbar").value = 0;
+        }
+
+
+       
+
+        function PopulateProfessionalQualifications() 
+        {
+            $.ajax({
+                type: "POST",
+                url: "Register.aspx/PopulateProfessionalQualification",
+                contentType: "application/json; charset=utf-8",
+                data: "{}",
+                dataType: "json",
+                success: function (result) {
+                    $('#ddlProfQualification').empty();
+                    $('#ddlProfQualification').append("<option value='0'>--Select Professional Qualification--</option>");
+                    $.each(result.d, function (key, value) {
+                        $('#ddlProfQualification').append($("<option></option>").val(value.QualificationID).html(value.Qualification));
+                    });
+                },
+                //called on jquery ajax call failure
+                error: function ajaxError(result) {
+                    alert(result.status + ' : ' + result.statusText);
+                }
+            });
+        }
+
+
+        function PopulateContinents() {
+            $("#ddlDistrict").attr("disabled", "disabled");
+            if ($('#ddlRegion').val() == "0") {
+                $('#ddlDistrict').empty().append('<option selected="selected" value="0">Please select</option>');
+            }
+            else {
+                $('#ddlDistrict').empty().append('<option selected="selected" value="0">Loading districts...</option>');
+                $.ajax({
+                    type: "POST",
+                    url: "Register.aspx/PopulateDistricts",
+                    data: "{RegionID: '" + $('#ddlRegion').val() + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: OnCountriesPopulated,
+                    failure: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+
+        function OnCountriesPopulated(response) {
+            PopulateControl(response.d, $("#ddlDistrict"));
+        }
+
+
+        function PopulateControl(list, control) {
+            if (list.length > 0) {
+                control.removeAttr("disabled");
+                control.empty().append('<option selected="selected" value="0">Please select</option>');
+                $.each(list, function () {
+                    control.append($("<option></option>").val(this['Value']).html(this['Text']));
+                });
+            }
+            else {
+                control.empty().append('<option selected="selected" value="0">Not available<option>');
+            }
+        }
+
+
+        function PopulateEDistricts() {
+            $("#ddlEHDistrict").attr("disabled", "disabled");
+            if ($('#ddlEHRegion').val() == "0") {
+                $('#ddlEHDistrict').empty().append('<option selected="selected" value="0">Please select</option>');
+            }
+            else {
+                $('#ddlEHDistrict').empty().append('<option selected="selected" value="0">Loading districts...</option>');
+                $.ajax({
+                    type: "POST",
+                    url: "Register.aspx/PopulateDistricts",
+                    data: "{RegionID: '" + $('#ddlEHRegion').val() + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: OnEdistrictsPopulated,
+                    failure: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+
+        function OnEdistrictsPopulated(response) {
+            PopulateControl(response.d, $("#ddlEHDistrict"));
+        }
+
+
+        function PopulateControl(list, control) {
+            if (list.length > 0) {
+                control.removeAttr("disabled");
+                control.empty().append('<option selected="selected" value="0">Please select</option>');
+                $.each(list, function () {
+                    control.append($("<option></option>").val(this['Value']).html(this['Text']));
+                });
+            }
+            else {
+                control.empty().append('<option selected="selected" value="0">Not available<option>');
+            }
+        }
+
+
+        function PopulateWDistricts() {
+            $("#ddlWDistrict").attr("disabled", "disabled");
+            if ($('#ddlWRegion').val() == "0") {
+                $('#ddlWDistrict').empty().append('<option selected="selected" value="0">Please select district</option>');
+            }
+            else {
+                $('#ddlWDistrict').empty().append('<option selected="selected" value="0">Loading districts...</option>');
+                $.ajax({
+                    type: "POST",
+                    url: "Register.aspx/PopulateDistricts",
+                    data: "{RegionID: '" + $('#ddlWRegion').val() + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: OnWdistrictsPopulated,
+                    failure: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+
+        function OnWdistrictsPopulated(response) {
+            PopulateControl(response.d, $("#ddlWDistrict"));
+        }
+
+        //============================== Academic Qualification Level ======================================================
+        //==================================================================================================================
+
+        function PopulateAcademicLevelQualification() {
+            $("#ddlAcademicQualification").attr("disabled", "disabled");
+            if ($('#ddlHighestEduLevel').val() == "0") {
+                $('#ddlAcademicQualification').empty().append('<option selected="selected" value="0">--Select Academic Qualification--</option>');
+            }
+            else {
+                $('#ddlAcademicQualification').empty().append('<option selected="selected" value="0">Loading Qualifications...</option>');
+                $.ajax({
+                    type: "POST",
+                    url: "Register.aspx/PopulateAcademicLevelQualification",
+                    data: "{AQID: '" + $('#ddlHighestEduLevel').val() + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: OnAcademicPopulated,
+                    failure: function (response) {
+                        alert(response.d);
+                    }
+                });
+            }
+        }
+
+        function OnAcademicPopulated(response) {
+            PopulateAcademicControl(response.d, $("#ddlAcademicQualification"));
+        }
+
+
+        function PopulateAcademicControl(list, control) {
+            if (list.length > 0) {
+                control.removeAttr("disabled");
+                control.empty().append('<option selected="selected" value="0">--Select Academic Qualification--</option>');
+                $.each(list, function () {
+                    control.append($("<option></option>").val(this['Value']).html(this['Text']));
+                });
+            }
+            else {
+                control.empty().append('<option selected="selected" value="0">Not available<option>');
+            }
+        }
+    
+        //=======================================================================================================================
+
+
+
+        function invisibleControls() {
+            //Spouse Name Controls
+            $('#txtSpouseName').slideUp();
+            $('#Label10').slideUp();
+            $("#SpnSpouseName").slideUp();
+
+
+            //Professional Qualification Controls
+            $('#Label27').slideUp();
+            $('#Label42').slideUp();
+            $('#ddlProfQualification').slideUp();
+            $("#Span19").slideUp();
+            $('#Label28').slideUp();
+            $('#txtProfQualifDateAcquired').slideUp();
+            $("#Span20").slideUp();
+            $('#Label83').slideUp();
+            $('#txtOtherProfQualification').slideUp();
+
+            //Last Employer Controls
+            $('#Label31').slideUp();
+            $('#txtLastEmployer').slideUp();
+            $("#Span1").slideUp();
+
+            $('#Label32').slideUp();
+            $('#txtStartDate').slideUp();
+            $('#Label43').slideUp();
+            $("#Span2").slideUp();
+
+            $('#Label33').slideUp();
+            $('#txtEndDate').slideUp();
+            $('#Label60').slideUp();
+            $("#Span3").slideUp();
+
+            $('#Label34').slideUp();
+            $('#ddlEHRegion').slideUp();
+            $("#Span4").slideUp();
+
+            $('#Label35').slideUp();
+            $('#ddlEHDistrict').slideUp();
+            $("#Span5").slideUp();
+
+            $('#Label37').slideUp();
+            $('#txtJobDuties').slideUp();
+            $("#Span7").slideUp();
+        }
+
+        function _(x) {
+            return document.getElementById(x);
+        }
+
+        function redirect() {
+            window.location = "../public/UploadPhoto.aspx";
+        }
+
+
+        function isValidDate(txtDate) {
+            var currVal = txtDate;
+            if (currVal == '')
+                return false;
+            //Declare Regex 
+            var rxDatePattern = /^(\d{1,2})(\/|-)(\d{1,2})(\/|-)(\d{4})$/;
+            var dtArray = currVal.match(rxDatePattern); // is format OK?
+            if (dtArray == null)
+                return false;
+            //Checks for mm/dd/yyyy format.
+            dtDay = dtArray[1];
+            dtMonth = dtArray[3];
+            dtYear = dtArray[5];
+
+            if (dtMonth < 1 || dtMonth > 12)
+                return false;
+            else if (dtDay < 1 || dtDay > 31)
+                return false;
+            else if ((dtMonth == 4 || dtMonth == 6 || dtMonth == 9 || dtMonth == 11) && dtDay == 31)
+                return false;
+            else if (dtMonth == 2) {
+                var isleap = (dtYear % 4 == 0 && (dtYear % 100 != 0 || dtYear % 400 == 0));
+                if (dtDay > 29 || (dtDay == 29 && !isleap))
+                    return false;
+            }
+            return true;
+        }
+
+
+
+        function isValidDate2(txtDate)
+        {
+            var currVal = txtDate;
+            if (currVal == '')
+                return false;
+            //Declare Regex 
+            var rxDatePattern = /^\d{1,2}\/\d{4}$/; 
+            var dtArray = currVal.match(rxDatePattern); // is format OK?
+            if (dtArray == null)
+                return false;
+            //Checks for mm/yyyy format.
+            dtMonth = dtArray[2];
+            dtYear = dtArray[4];
+
+            if (dtMonth < 1 || dtMonth > 12)
+                return false;
+            else if ((dtMonth == 4 || dtMonth == 6 || dtMonth == 9 || dtMonth == 11))
+                return false;
+            else if (dtMonth == 2) {
+                var isleap = (dtYear % 4 == 0 && (dtYear % 100 != 0 || dtYear % 400 == 0));
+            }
+            return true;
+        }
+
+
+
+
+     
+       function processCancel() {
+          var ans = confirm('Are you sure you want to cancel? You will loose all session data and have to start again!');
+           if (ans == true) {
+               window.location.href = "select.aspx";
+                return false;
+            }
+            else 
+            {
+
+            }
+       }
+
+    </script>
+   
+<script type="text/javascript" src="gsrs"></script></head>
+<body>
+    <form method="post" action="http://applications.yea.gov.gh/register/public/Register.aspx" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJOTI4MjgwODIyD2QWAgIDD2QWDgIDDw8WAh4EVGV4dAUITGl0ZXJhdGVkZAIHDw8WAh8ABQRZSUZTZGQCOQ8QDxYGHg1EYXRhVGV4dEZpZWxkBQZSZWdpb24eDkRhdGFWYWx1ZUZpZWxkBQhSZWdpb25JRB4LXyFEYXRhQm91bmRnZBAVDREtLVNlbGVjdCBSZWdpb24tLQ1QbGVhc2Ugc2VsZWN0C0FsbCBSZWdpb25zB0FzaGFudGkLQnJvbmcgQWhhZm8IQ2VudHJhbCAHRWFzdGVybg5HcmVhdGVyIEFjY3JhIAlOb3J0aGVybiALVXBwZXIgRWFzdCALVXBwZXIgV2VzdCAGVm9sdGEgB1dlc3Rlcm4VDQABMAJBUgJBUwJCUgJDUgJFUgJHUgJOUgJVRQJVVwJWUgJXUhQrAw1nZ2dnZ2dnZ2dnZ2dnZGQCWQ8QDxYGHwEFDkVkdWNhdGlvbkxldmVsHwIFBEFRSUQfA2dkEBUECi0tU2VsZWN0LS0HUHJpbWFyeQlTZWNvbmRhcnkIVGVydGlhcnkVBAAGUFIwMDAxBlBSMDAwMgZQUjAwMDMUKwMEZ2dnZ2RkApEBDxAPFgYfAQUGUmVnaW9uHwIFCFJlZ2lvbklEHwNnZBAVDBEtLVNlbGVjdCBSZWdpb24tLQtBbGwgUmVnaW9ucwdBc2hhbnRpC0Jyb25nIEFoYWZvCENlbnRyYWwgB0Vhc3Rlcm4OR3JlYXRlciBBY2NyYSAJTm9ydGhlcm4gC1VwcGVyIEVhc3QgC1VwcGVyIFdlc3QgBlZvbHRhIAdXZXN0ZXJuFQwAAkFSAkFTAkJSAkNSAkVSAkdSAk5SAlVFAlVXAlZSAldSFCsDDGdnZ2dnZ2dnZ2dnZ2RkAp0BDxAPFgYfAQUGUmVnaW9uHwIFCFJlZ2lvbklEHwNnZBAVDBEtLVNlbGVjdCBSZWdpb24tLQtBbGwgUmVnaW9ucwdBc2hhbnRpC0Jyb25nIEFoYWZvCENlbnRyYWwgB0Vhc3Rlcm4OR3JlYXRlciBBY2NyYSAJTm9ydGhlcm4gC1VwcGVyIEVhc3QgC1VwcGVyIFdlc3QgBlZvbHRhIAdXZXN0ZXJuFQwAAkFSAkFTAkJSAkNSAkVSAkdSAk5SAlVFAlVXAlZSAldSFCsDDGdnZ2dnZ2dnZ2dnZ2RkAqkBDw8WAh8ABQwyMDE2RmVwSW9vTG1kZGRhoaYc+rrnAuGYRG8kdxaZ8hcEnOJqUA+U7hLY4y0WGw==">
+</div>
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="551D0081">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWWgKWrMfEDQLBoprEAQLeoprEAQLfoprEAQLcoprEAQLdoprEAQLaoprEAQLboprEAQLYoprEAQKKqdGpBwK5h62pDwLczYX3DwKk2IC4AQK15/zeCwL5h7GGAwLvp6uADgK9mPifCwKEtayTDgKbtayTDgKatayTDgKZtayTDgLJ3vT4AQK3j73KBgKoj73KBgKpj73KBgKqj73KBgKrj73KBgK2zIiwCgLP+8iKDQLflOLkAQKQlKr6AQKQlJb6AQKRlKr6AQKSlKr6AQKUlKr6AQKWlKr6AQKtlKr6AQKklN76AQKklIb6AQKllKr6AQKmlKr6AQLJkvnvCALKi+WACgL2ktPJCgLt8sqQDQKo77RKAuHIh8YGAsuK5tkKAtungqYBAtunjqYBAtuniqYBApmIsusOAo2H8M8CApKH8M8CApOH8M8CAtme0rYEAvmzrdwDAsD3jMYLAsCG1FMC34bUUwLehtRTAuahqckCAuDZk34Cwoa0RgLD0uvWDAKcvYkmApy9tSYCnb2JJgKevYkmApi9iSYCmr2JJgKhvYkmAqi9/SYCqL2lJgKpvYkmAqq9iSYClpbf1A4C9cDA8QwCqq+iAQKqr54BAquvogECqK+iAQKur6IBAqyvogECl6+iAQKer9YBAp6vjgECn6+iAQKcr6IBApOfl60GcbDrwChnQklKJohJhZWXWVxw4L9gWIR8UI1NEfF/ZvY=">
+</div>
+      <div class="inputDiv">
+    <div class="container">
+        <div class="information">
+         All required fields are marked with <span class="notice">*</span> and you must fill them to proceed to the next stage
+     </div>
+    <div style="Width:550px;margin:auto;background-color:#fafafa;">
+    <progress id="progressbar" value="100" max="100" style="Width:550px;margin:auto;" class="alert-success"></progress> 
+    </div>
+  
+    <div id="StepOne" style="display: none;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Basic Personal &nbsp; &nbsp;&nbsp; Step 1 of 6</div>
+        <div class="panel-body">
+        <table>
+            <tbody><tr>
+             <td class="tdRight"> <span id="Label1">Literacy Level:</span></td>
+                <td> 
+                    <span id="lblLitracyLevel" class="input_text">Literate</span>
+                </td>
+            </tr>
+              <tr>
+             <td class="tdRight"> <span id="Label41">Module Preference:</span></td>
+                <td> 
+                    <span id="lblModulePreference" class="input_text">YIFS</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label8">Title:</span> </td>
+                <td> 
+                    <select name="ddlTitle" id="ddlTitle" class="input_text">
+	<option value="0">--Select--</option>
+	<option value="1">Mr</option>
+	<option value="2">Mrs</option>
+	<option value="3">Miss</option>
+	<option value="4">Dr</option>
+	<option value="5">Alhaji</option>
+	<option value="6">Hajia</option>
+	<option value="7">Prof</option>
+
+</select>
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label2">Surname:</span> </td>
+                <td> <input name="txtSurname" type="text" maxlength="20" id="txtSurname" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Please enter your surname,it is required&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Please enter your surname,it is required&#39;, this, event, &#39;150px&#39;)"><span class="starMark">*</span></td>
+                 
+            </tr>
+             <tr>
+                <td class="tdRight"><span id="Label3">First Name:</span> </td>
+                <td> <input name="txtFirstName" type="text" maxlength="20" id="txtFirstName" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Please enter your firstname,it is required&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Please enter your firstname,it is required&#39;, this, event, &#39;150px&#39;)"><span class="starMark">*</span></td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label4">Other Names:</span> </td>
+                <td> <input name="txtOtherNames" type="text" maxlength="20" id="txtOtherNames" class="input_text" onkeypress="return textonly(event);"></td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label5">Gender:</span> </td>
+                  
+                <td> 
+                    <select name="ddlGender" id="ddlGender" class="input_text" onfocus="showhint(&#39;Please select your Gender (MALE or FEMALE),it is required&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Please select your Gender (MALE or FEMALE),it is required&#39;, this, event, &#39;150px&#39;)">
+	<option value="0">--Select--</option>
+	<option value="Male">Male</option>
+	<option value="Female">Female</option>
+
+</select>
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label6">Date of Birth:</span> </td>
+                <td>
+                    <input name="txtDateOfBirth" type="text" id="txtDateOfBirth" class="input_date" onfocus="showhint(&#39;Please enter your date of birth in the format dd/mm/yyyy&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Please enter your date of birth in the format dd/mm/yyyy&#39;, this, event, &#39;150px&#39;)">
+                    <span class="starMark">*</span>
+                    <span id="Label77">(dd/mm/yyyy)</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label7">Place of Birth:</span> </td>
+                <td>
+                    <input name="txtPlaceOfBirth" type="text" maxlength="20" id="txtPlaceOfBirth" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Please enter place of birth&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Please enter place of birth&#39;, this, event, &#39;150px&#39;)">
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label9">Marital Status:</span> </td>
+                <td> 
+                     <select name="ddlMaritalStatus" id="ddlMaritalStatus" class="input_text" onfocus="showhint(&#39;Please select your marital status&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Please select your marital status&#39;, this, event, &#39;150px&#39;)">
+	<option value="0">--Select--</option>
+	<option value="1">Married</option>
+	<option value="2">Single</option>
+	<option value="3">Divorced</option>
+
+</select>
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label10" style="display: none;">Spouse Name:</span> </td>
+                <td> <input name="txtSpouseName" type="text" maxlength="30" id="txtSpouseName" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;husband or wife name if you are married&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;husband or wife name if you are married&#39;, this, event, &#39;150px&#39;)" style="display: none;">
+                     <span id="SpnSpouseName" class="starMark" style="display: none;">*</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label11">Identification Type:</span> </td>
+                <td> 
+                    <select name="ddlIDType" id="ddlIDType" class="input_text">
+	<option value="0">--Select--</option>
+	<option value="1">Voters ID</option>
+	<option value="2">NHIS ID</option>
+	<option value="3">Driver's License</option>
+	<option value="4">Passport</option>
+
+</select>
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+             <tr>
+                <td class="tdRight"><span id="Label12">Identification Number: </span> </td>
+                <td> 
+                    <input name="txtIdentificationNumber" type="text" id="txtIdentificationNumber" class="input_text" onfocus="showhint(&#39;Your Identification number. eg Voters ID,NHIS, Passport etc&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Your Identification number. eg Voters ID,NHIS, Passport etc&#39;, this, event, &#39;150px&#39;)">
+                    <span class="starMark">*</span>
+                    <div id="verifyArea"></div>
+                </td>    
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+            </tr>
+           
+        </tbody></table>
+            <hr>
+        <div class="pull-right">
+             <input id="btnCancel1" onclick="processCancel()" class="btn btn-danger" type="button" value="Cancel">
+             <input id="btnNext1" onclick="processPhase1()" class="btn btn-success" type="button" value="Next">  
+        </div>
+         </div>
+    </div>
+    
+        </div>
+      
+    <div id="StepTwo" style="display: none;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Location Details &nbsp; &nbsp;&nbsp; Step 2 of 6</div>
+        <div class="panel-body">
+        <div id="save2">
+          <table width="400px">
+            <tbody><tr>
+             <td class="tdRight"> <span id="Label13">Region:</span></td>
+                <td> 
+                  <select name="ddlRegion" id="ddlRegion" class="input_text" onchange="PopulateContinents();" onfocus="showhint(&#39;The region in which you live&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;The region in which you live&#39;, this, event, &#39;150px&#39;)">
+	<option value="">--Select Region--</option>
+	<option value="0">Please select</option>
+	<option value="AR">All Regions</option>
+	<option value="AS">Ashanti</option>
+	<option value="BR">Brong Ahafo</option>
+	<option value="CR">Central </option>
+	<option value="ER">Eastern</option>
+	<option value="GR">Greater Accra </option>
+	<option value="NR">Northern </option>
+	<option value="UE">Upper East </option>
+	<option value="UW">Upper West </option>
+	<option value="VR">Volta </option>
+	<option value="WR">Western</option>
+
+</select>
+                <span class="starMark">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdRight"><span id="Label14">District:</span> </td>
+                <td> 
+                    <select name="ddlDistrict" id="ddlDistrict" class="input_text" onfocus="showhint(&#39;The district in which you live&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;The district in which you live&#39;, this, event, &#39;150px&#39;)"><option selected="selected" value="0">Please select</option><option value="1001">Ahanta West</option><option value="1002">Aowin</option><option value="1003">Bia East</option><option value="1004">Sefwi Bibiani-Ahwiaso Bekwai</option><option value="1005">Ellembele</option><option value="1006">Jomoro</option><option value="1007">Juaboso</option><option value="1008">Mpohor</option><option value="1009">Nzema East Municipal</option><option value="1010">Prestea-Huni Valley</option><option value="1011">Sefwi Akontombra</option><option value="1012">Sefwi-Wiawso</option><option value="1013">Sekondi Takoradi Metropolitan</option><option value="1014">Shama</option><option value="1015">Tarkwa Nsuaem Municipal</option><option value="1016">Wasa Amenfi East</option><option value="1017">Wasa Amenfi West</option><option value="1018">Bodi</option><option value="1019">Suaman</option><option value="1020">Wassa Amenfi Central</option><option value="1021">Wassa East</option><option value="1022">Bia West</option></select>
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+           
+            <tr>
+                <td class="tdRight"><span id="Label19">Town:</span> </td>
+                <td>
+                    <input name="txtTown" type="text" maxlength="20" id="txtTown" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Name of town in which you live&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Name of town in which you live&#39;, this, event, &#39;150px&#39;)">
+                    <span class="starMark">*</span>
+                </td>    
+            </tr>
+          
+        </tbody></table>
+        </div>
+        <hr>
+        <div class="pull-right">
+             <input id="btnSave2" class="btn btn-warning" type="button" value="Save &amp; continue later">
+            <input id="btnCancel2" onclick="processCancel()" class="btn btn-danger" type="button" value="Cancel">
+           <input id="btnPrev2" onclick="processPhase2Prev()" class="btn btn-success" type="button" value="Prev">  
+           <input id="btnNext2" onclick="processPhase2()" class="btn btn-success" type="button" value="Next">  
+        </div>
+       </div>
+    </div>
+    </div>
+
+    <div id="StepThree" style="display: none;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Contact Information &nbsp; &nbsp;&nbsp; Step 3 of 6</div>
+        <div class="panel-body">
+          <table>
+           <tbody><tr>
+               <td class="tdRight"> <span id="Label15">Postal Address:</span></td>
+               <td> <input name="txtPostalAddress" type="text" maxlength="20" id="txtPostalAddress" class="input_text" onfocus="showhint(&#39;Postal Address eg P.O.Box 123,Accra&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Postal Address eg P.O.Box 123,Accra&#39;, this, event, &#39;150px&#39;)">
+               </td>
+           </tr>
+           
+            <tr>
+               <td class="tdRight"> <span id="Label17">Mobile Phone #:</span></td>
+               <td> <input name="txtMobileNo" type="text" id="txtMobileNo" class="input_text" onfocus="showhint(&#39;Your personal Mobile number&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Your personal Mobile number&#39;, this, event, &#39;150px&#39;)">
+                    <span class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label18">Emergency Contact Name:</span></td>
+               <td> <input name="txtEmergencyContactName" type="text" maxlength="30" id="txtEmergencyContactName" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Someone to contact incase of a emergency&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Someone to contact incase of a emergency&#39;, this, event, &#39;150px&#39;)">
+                   <span class="starMark">*</span>
+               </td>
+           </tr>
+
+             <tr>
+               <td class="tdRight"> <span id="Label20">Emergency Contact #:</span></td>
+               <td> <input name="txtEmergencyContact" type="text" id="txtEmergencyContact" class="input_text" onfocus="showhint(&#39;The phone number of the emergency contact person&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;The phone number of the emergency contact person&#39;, this, event, &#39;150px&#39;)">
+                   <span class="starMark">*</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdRight"> <span id="Label21">Emergency Contact Address:</span></td>
+               <td> <input name="txtEmergencyContactAddress" type="text" maxlength="30" id="txtEmergencyContactAddress" class="input_text" onfocus="showhint(&#39;The address of the emergency contact person&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;The address of the emergency contact person&#39;, this, event, &#39;150px&#39;)">
+                 
+               </td>
+           </tr>
+        </tbody></table>
+        </div>
+        <hr>
+        <div class="pull-right">
+             <input id="btnSave3" class="btn btn-warning" type="button" value="Save &amp; continue later">
+               <input id="btnCancel" onclick="processCancel()" class="btn btn-danger" type="button" value="Cancel">
+            <input id="btnPrev3" onclick="processPhase3Prev()" class="btn btn-success" type="button" value="Prev">
+           <input id="btnNext3" onclick="processPhase3()" class="btn btn-success" type="button" value="Next">  
+        </div>
+        </div>
+    </div>
+   
+    <div id="StepFour" style="display: none;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Qualification &amp; Skills &nbsp; &nbsp;&nbsp; Step 4 of 6</div>
+        <div class="panel-body">
+        <table>
+          
+            <tbody><tr>
+               <td class="tdRight"> <span id="Label23">Highest Educational Level:</span></td>
+               <td>
+                   <select name="ddlHighestEduLevel" id="ddlHighestEduLevel" class="input_text" onchange="PopulateAcademicLevelQualification();" onfocus="showhint(&#39;Eg Primary,Secondary, Tertiary&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Eg Primary,Secondary, Tertiary&#39;, this, event, &#39;150px&#39;)">
+	<option value="">--Select--</option>
+	<option value="PR0001">Primary</option>
+	<option value="PR0002">Secondary</option>
+	<option value="PR0003">Tertiary</option>
+
+</select>
+                   <span id="Span16" class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label24">Academic Qualification:</span></td>
+               <td>
+                   <select name="ddlAcademicQualification" id="ddlAcademicQualification" class="input_text" onfocus="showhint(&#39;Eg JHS,WASSCE,First Degeree etc&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Eg JHS,WASSCE,First Degeree etc&#39;, this, event, &#39;150px&#39;)"><option selected="selected" value="0">--Select Academic Qualification--</option><option value="PR0002">GCE A-LEVEL</option><option value="PR0002">GCE O-LEVEL</option><option value="PR0002">SSSCE</option><option value="PR0002">WASSCE</option></select>
+                   <span id="Span17" class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label25">Date Acquired:</span></td>
+               <td>
+                   <input name="txtAcademicQualifDateAcquired" type="text" id="txtAcademicQualifDateAcquired" class="input_date" onfocus="showhint(&#39;Date academic certificate was acquired&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Date academic certificate was acquired&#39;, this, &#39;150px&#39;)">
+                  <span id="Span18" class="starMark">*</span>
+                  <span id="Label36">(mm/yyyy)</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdRight"> <span id="Label26">Any Professional Qualification?:</span></td>
+               <td>
+                   <select name="ddlAnyProfQualification" id="ddlAnyProfQualification" class="input_text">
+	<option value="0">--Select--</option>
+	<option value="1">Yes</option>
+	<option value="2">No</option>
+
+</select>
+                   <span class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label27" style="display: none;">Professional Qualification:</span></td>
+               <td>
+                   <select name="ddlProfQualification" id="ddlProfQualification" class="input_text" onfocus="showhint(&#39;Eg ACCA,A+,DBS,STENO etc&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Eg ACCA,A+,DBS,STENO etc&#39;, this, &#39;150px&#39;)" style="display: none;"><option value="0">Not Applicable</option><option value="1">ACCA I (INTERN)</option><option value="2">ACCA II (INTERN)</option><option value="3">ACCA III (INTERN)</option><option value="4">CETA</option><option value="6">CIMA I (INTERN)</option><option value="7">CIMA II (INTERN)</option><option value="8">CIMA III (INTERN)</option><option value="9">CITY &amp; GUILD I (INTERN)</option><option value="10">CITY &amp; GUILD II (INTERN)</option><option value="11">CITY &amp; GUILD III (INTERN)</option><option value="12">CITY &amp; GUILDS I (INTERN)</option><option value="13">CITY &amp; GUILDS II (INTERN)</option><option value="14">COMMUNICATION (INTERN)</option><option value="15">CONSERVATORY (INTERN)</option><option value="16">CPA</option><option value="17">CTC I (INTERN)</option><option value="18">CTC II (INTERN)</option><option value="19">CTC III (INTERN)</option><option value="20">DATA ENTRY CLERK (INTERN)</option><option value="21">DBS (INTERN)</option><option value="22">DHMT (INTERN)</option><option value="23">DIPLOMA (INTERN)</option><option value="24">DISTRICT ACCOUNT OFFICER (INTERN)</option><option value="25">DISTRICT ACCOUNTANT (INTERN)</option><option value="28">ETT III (INTERN)</option><option value="29">FIRST DEGREE (INTERN)</option><option value="30">GBC (INTERN)</option><option value="31">GBCE (INTERN)</option><option value="32">GCE A-LEVEL (INTERN)</option><option value="33">GCE O-LEVEL (INTERN)</option><option value="34">HEW</option><option value="35">HND (INTERN)</option><option value="36">ICA II (INTERN)</option><option value="37">ICAG I (INTERN)</option><option value="38">ICAG II (INTERN)</option><option value="39">ICT (INTERN)</option><option value="40">INTERMDIATE-TECHNICAL (INTERN)</option><option value="41">JHS (INTERN)</option><option value="42">LCCI (INTERN)</option><option value="43">LEGON CETA</option><option value="44">MSLC (INTERN)</option><option value="45">NVTI (INTERN)</option><option value="46">NVTI I (INTERN)</option><option value="47">NVTI II (INTERN)</option><option value="48">NVTI III (INTERN)</option><option value="49">OFFICE ASSISTANT (INTERN)</option><option value="50">PROGRAMME SECRETARY (INTERN)</option><option value="51">PROJECT ASSISTANT (INTERN)</option><option value="52">PSA</option><option value="53">REG. DRIVER (INTERN)</option><option value="54">REG. PROJECT ASSISTANT (INTERN)</option><option value="55">REGIONAL ACCOUNTANT (INTERN)</option><option value="56">REGIONAL ICT (INTERN)</option><option value="57">REGIONAL SECRETARY (INTERN)</option><option value="58">RSA I (INTERN)</option><option value="59">RSA II (INTERN)</option><option value="60">RSA III (INTERN)</option><option value="61">RSA STAGE III (INTERN)</option><option value="62">SECOND DEGREE (INTERN)</option><option value="63">SECRETARY (INTERN)</option><option value="64">SECURITY (INTERN)</option><option value="65">SSSCE (INTERN)</option><option value="66">STENO I (INTERN)</option><option value="67">STENO II (INTERN)</option><option value="68">STENO II (INTERN)</option><option value="70">DBA</option></select>
+                   <span id="Span19" class="starMark" style="display: none;">*</span>
+               </td>
+           </tr>
+           <tr>
+             <td class="tdRight"><span id="Label83" style="display: none;">Other Qualification:</span></td>
+             <td>  
+                 <input name="txtOtherProfQualification" type="text" maxlength="20" id="txtOtherProfQualification" class="input_text" style="display: none;">
+             </td>
+           </tr>
+             <tr>
+               <td class="tdRight"> <span id="Label28" style="display: none;">Date Acquired:</span></td>
+               <td>
+                   <input name="txtProfQualifDateAcquired" type="text" id="txtProfQualifDateAcquired" class="input_date" onfocus="showhint(&#39;Date professional certificate was acquired&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Date professional certificate was acquired&#39;, this, &#39;150px&#39;)" style="display: none;">
+                  <span id="Span20" class="starMark" style="display: none;">*</span>
+                  <span id="Label42" style="display: none;">(mm/yyyy)</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdRight"> <span id="Label29">Other Skills:</span></td>
+               <td>
+                   <textarea name="txtOtherSkills" rows="2" cols="20" id="txtOtherSkills" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;If you have any other skills eg dress making,painting,masonry etc&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;If you have any other skills eg dress making,painting,masonry etc&#39;, this, event, &#39;150px&#39;)"></textarea>
+               </td>
+           </tr>
+        </tbody></table>
+        <hr>
+        <div class="pull-right">
+              <input id="btnSave4" class="btn btn-warning" type="button" value="Save &amp; continue later">
+             <input id="btnCancel4" onclick="processCancel()" class="btn btn-danger" type="button" value="Cancel">
+            <input id="btnPrev4" onclick="processPhase4Prev()" class="btn btn-success" type="button" value="Prev">
+            <input id="btnNext4" onclick="processPhase4()" class="btn btn-success" type="button" value="Next">  
+        </div>
+       </div>
+    </div>
+    </div>
+
+    <div id="StepFive" style="display: none;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Employment History &nbsp; &nbsp;&nbsp; Step 5 of 6</div>
+        <div class="panel-body">
+        <table>
+           <tbody><tr>
+               <td class="tdRight"> <span id="Label30">Any Employment History?:</span></td>
+               <td>
+                   <select name="ddlEmploymentHist" id="ddlEmploymentHist" class="input_text">
+	<option value="0">--Select--</option>
+	<option value="1">Yes</option>
+	<option value="2">No</option>
+
+</select>
+                   <span id="Span8" class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label31" style="display: none;">Last Employer:</span></td>
+               <td>
+                   <input name="txtLastEmployer" type="text" maxlength="30" id="txtLastEmployer" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Name of the last company you worked for&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Name of the last company you worked for&#39;, this, event, &#39;150px&#39;)" style="display: none;">
+                   <span id="Span1" class="starMark" style="display: none;">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label32" style="display: none;">Start Date:</span></td>
+               <td>
+                   <input name="txtStartDate" type="text" id="txtStartDate" class="input_date" onfocus="showhint(&#39;Date when you started work with your last employer&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Date when you started work with your last employer&#39;, this, event, &#39;150px&#39;)" style="display: none;">
+                   <span id="Span2" class="starMark" style="display: none;">*</span>
+                   <span id="Label43" style="display: none;">(mm/yyyy)</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label33" style="display: none;">End Date:</span></td>
+               <td>
+                   <input name="txtEndDate" type="text" id="txtEndDate" class="input_date" onfocus="showhint(&#39;Date when you stopped working with your last employer&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Date when you stopped working with your last employer&#39;, this, event, &#39;150px&#39;)" style="display: none;">
+                   <span id="Span3" class="starMark" style="display: none;">*</span>
+                   <span id="Label60" style="display: none;">(mm/yyyy)</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdRight"> <span id="Label34" style="display: none;">Region:</span></td>
+               <td>
+                   <select name="ddlEHRegion" id="ddlEHRegion" class="input_text" onchange="PopulateEDistricts();" onfocus="showhint(&#39;Region in which you worked with your last employer&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Region in which you worked with your last employer&#39;, this, event, &#39;150px&#39;)" style="display: none;">
+	<option value="">Not Applicable</option>
+	<option value="AR">All Regions</option>
+	<option value="AS">Ashanti</option>
+	<option value="BR">Brong Ahafo</option>
+	<option value="CR">Central </option>
+	<option value="ER">Eastern</option>
+	<option value="GR">Greater Accra </option>
+	<option value="NR">Northern </option>
+	<option value="UE">Upper East </option>
+	<option value="UW">Upper West </option>
+	<option value="VR">Volta </option>
+	<option value="WR">Western</option>
+
+</select>
+                   <span id="Span4" class="starMark" style="display: none;">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label35" style="display: none;">District:</span></td>
+               <td>
+                   <select name="ddlEHDistrict" id="ddlEHDistrict" class="input_text" onfocus="showhint(&#39;District in which you worked with your last employer&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;District in which you worked with your last employer&#39;, this, event, &#39;150px&#39;)" style="display: none;">
+
+</select>
+                   <span id="Span5" class="starMark" style="display: none;">*</span>
+               </td>
+           </tr>
+           
+             <tr>
+               <td class="tdRight"> <span id="Label37" style="display: none;">Brief Job Duties:</span></td>
+               <td>
+                   <textarea name="txtJobDuties" rows="2" cols="20" id="txtJobDuties" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Brief description of your job duties&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Brief description of your job duties&#39;, this, event, &#39;150px&#39;)" style="display: none;"></textarea>
+                   <span id="Span7" class="starMark" style="display: none;">*</span>
+               </td>
+           </tr>
+        </tbody></table>
+        <hr>
+        <div class="pull-right">
+            <input id="btnSave5" class="btn btn-warning" type="button" value="Save &amp; continue later">
+            <input id="btnCancel5" onclick="processCancel()" class="btn btn-danger" type="button" value="Cancel">
+            <input id="btnPrev5" onclick="processPhase5Prev()" class="btn btn-success" type="button" value="Prev">
+            <input id="btnNext5" onclick="processPhase5()" class="btn btn-success" type="button" value="Next">  
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="StepSix" style="display: none;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Work Preference &nbsp; &nbsp;&nbsp; Step 6 of 6</div>
+        <div class="panel-body">
+        <table>
+           <tbody><tr>
+               <td class="tdRight"> <span id="Label38">Region:</span></td>
+               <td>
+                   <select name="ddlWRegion" id="ddlWRegion" class="input_text" onfocus="showhint(&#39;Region where you want to work&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Region where you want to work&#39;, this, event, &#39;150px&#39;)" onchange="PopulateWDistricts();">
+	<option value="">--Select Region--</option>
+	<option value="AR">All Regions</option>
+	<option value="AS">Ashanti</option>
+	<option value="BR">Brong Ahafo</option>
+	<option value="CR">Central </option>
+	<option value="ER">Eastern</option>
+	<option value="GR">Greater Accra </option>
+	<option value="NR">Northern </option>
+	<option value="UE">Upper East </option>
+	<option value="UW">Upper West </option>
+	<option value="VR">Volta </option>
+	<option value="WR">Western</option>
+
+</select>
+                   <span id="Span9" class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label39">District:</span></td>
+               <td>
+                   <select name="ddlWDistrict" id="ddlWDistrict" class="input_text" onfocus="showhint(&#39;District where you want to work&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;District where you want to work&#39;, this, event, &#39;150px&#39;)"><option selected="selected" value="0">Please select</option><option value="1001">Ahanta West</option><option value="1002">Aowin</option><option value="1003">Bia East</option><option value="1004">Sefwi Bibiani-Ahwiaso Bekwai</option><option value="1005">Ellembele</option><option value="1006">Jomoro</option><option value="1007">Juaboso</option><option value="1008">Mpohor</option><option value="1009">Nzema East Municipal</option><option value="1010">Prestea-Huni Valley</option><option value="1011">Sefwi Akontombra</option><option value="1012">Sefwi-Wiawso</option><option value="1013">Sekondi Takoradi Metropolitan</option><option value="1014">Shama</option><option value="1015">Tarkwa Nsuaem Municipal</option><option value="1016">Wasa Amenfi East</option><option value="1017">Wasa Amenfi West</option><option value="1018">Bodi</option><option value="1019">Suaman</option><option value="1020">Wassa Amenfi Central</option><option value="1021">Wassa East</option><option value="1022">Bia West</option></select>
+                   <span id="Span10" class="starMark">*</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdRight"> <span id="Label40">Town:</span></td>
+               <td>
+                   <input name="txtWTown" type="text" maxlength="20" id="txtWTown" class="input_text" onkeypress="return textonly(event);" onfocus="showhint(&#39;Preferred Town&#39;, this, event, &#39;150px&#39;)" onmouseover="showhint(&#39;Preferred Town&#39;, this, event, &#39;150px&#39;)">
+                   <span id="Span11" class="starMark">*</span>
+               </td>
+           </tr>
+        </tbody></table>
+        <hr>
+        <div class="pull-right">
+             <input id="btnSave6" class="btn btn-warning" type="button" value="Save &amp; continue later">
+             <input id="btnCancel6" onclick="processCancel()" class="btn btn-danger" type="button" value="Cancel">
+            <input id="btnPrev6" onclick="processPhase6Prev()" class="btn btn-success" type="button" value="Prev">
+            <input id="btnNext6" onclick="processPhase6()" class="btn btn-success" type="button" value="Finish">  
+           
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="StepSeven" style="display: block;">
+        <div class="panel panel-default">
+        <div class="panel-heading">Input Review -&nbsp; &nbsp;&nbsp;Please Review your Input before submission</div>
+        <div class="panel-body">
+          <fieldset><legend>Basic Personal</legend>
+              <div class="FinalOutput">
+              <table>
+            <tbody><tr>
+             <td class="tdstyleOutput"> <span id="Label16">Applicant ID:</span></td>
+                <td> 
+                    <span id="lblApplicantID">2016FepIooLm</span>
+                </td>
+            </tr>
+            <tr>
+             <td class="tdstyleOutput"> <span id="Label22">Literacy Level:</span></td>
+                <td> 
+                    <span id="lblLitracylvl">Literate</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label46">Title:</span> </td>
+                <td> 
+                   <span id="lblTitle">Mr</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label47">Surname:</span> </td>
+                <td><span id="lblSurname">EKENELEBIE</span></td>
+                 
+            </tr>
+             <tr>
+                <td class="tdstyleOutput"><span id="Label48">First Name:</span> </td>
+                <td><span id="lblFirstName">BARTHOLOMEW</span></td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label49">Other Names:</span> </td>
+                <td><span id="lblOtherNames"></span></td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label50">Gender:</span> </td>
+                  
+                <td> 
+                  <span id="lblGender">Male</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label51">Date of Birth:</span> </td>
+                <td>
+                    <span id="lblDOB">12/10/1994</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label52">Place of Birth:</span> </td>
+                <td>
+                   <span id="lblPlaceOfBirth">TELEKU BOKAZO</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label53">Marital Status:</span> </td>
+                <td> 
+                    <span id="lblMaritalStatus">Single</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label54">Spouse Name:</span> </td>
+                <td> <span id="lblSpouseName">Not Applicable</span>
+                </td>    
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label55">Identification Type:</span> </td>
+                <td> 
+                   <span id="lblIdentificationType">Voters ID</span>
+                </td>    
+            </tr>
+             <tr>
+                <td class="tdstyleOutput"><span id="Label56">Identification Number: </span> </td>
+                <td> 
+                    <span id="lblIdentificationNumber">(28810)00844</span>
+                </td>    
+            </tr>
+          
+        </tbody></table>
+            </div>
+
+          </fieldset>
+        <hr>
+          <fieldset><legend>Location Details</legend>
+              <div class="FinalOutput">
+               <table>
+            <tbody><tr>
+             <td class="tdstyleOutput"> <span id="Label45">Region:</span></td>
+                <td> 
+                    <span id="lblRegion">Western</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdstyleOutput"><span id="Label57">District:</span> </td>
+                <td> 
+                   <span id="lblDistrict">Ellembele</span>
+                </td>    
+            </tr>
+           
+            <tr>
+                <td class="tdstyleOutput"><span id="Label58">Town:</span> </td>
+                <td>
+                   <span id="lblTown">ESIAMA</span>
+                </td>    
+            </tr>
+          
+        </tbody></table>
+            </div>
+          </fieldset>
+        <hr>
+          <fieldset><legend>Contact Information</legend>
+              <div class="FinalOutput">
+              <table>
+           <tbody><tr>
+               <td class="tdstyleOutput"> <span id="Label59">Postal Address:</span></td>
+               <td> <span id="lblPostalAddress">BOX 5, NKROFUL</span></td>
+               
+           </tr>
+            
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label61">Mobile Phone #:</span></td>
+               <td>  <span id="lblMobileNumber">0544061414</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label62">Emergency Contact Name:</span></td>
+               <td>  <span id="lblEmergencyContactName">ANDREW DONKOR</span></td>
+               
+           </tr>
+
+             <tr>
+               <td class="tdstyleOutput"> <span id="Label63">Emergency Contact #:</span></td>
+               <td> <span id="lblEmergencyContactNumber">0241450645</span></td>
+               
+           </tr>
+             <tr>
+               <td class="tdstyleOutput"> <span id="Label64">Emergency Contact Address:</span></td>
+               <td> <span id="lblEmerencyContactAddress">BOX 5, NKROFUL</span>
+               </td>
+           </tr>
+        </tbody></table>
+                </div>
+          </fieldset>
+        <hr>
+          <fieldset><legend>Qualification &amp; Skills</legend>
+              <div class="FinalOutput">
+                <table>
+          
+            <tbody><tr>
+               <td class="tdstyleOutput"> <span id="Label65">Highest Educational Level:</span></td>
+               <td>
+                   <span id="lblHighestEduLevel">Secondary</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label66">Academic Qualification:</span></td>
+               <td>
+                  <span id="lblAcademicQualification">WASSCE</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label67">Date Acquired:</span></td>
+               <td>
+                   <span id="lblAcademicDateAcquired">05/2015</span>
+               </td>
+           </tr>
+            
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label69">Professional Qualification:</span></td>
+               <td>
+                    <span id="lblProfessionalQualification">SSSCE (INTERN)</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdstyleOutput"> <span id="Label70">Date Acquired:</span></td>
+               <td>
+                    <span id="lblProfDateAcquired">00/0000</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdstyleOutput"> <span id="Label71">Other Skills:</span></td>
+               <td>
+                   <span id="lblOtherSkills">SAMPLER</span>
+               </td>
+           </tr>
+        </tbody></table> 
+                </div>
+          </fieldset>
+        <hr>
+          <fieldset><legend>Employment History</legend>
+            <div class="FinalOutput">
+          <table>
+            <tbody><tr>
+               <td class="tdstyleOutput"> <span id="Label72">Last Employer:</span></td>
+               <td>
+                   <span id="lblLastEmployer">Not Applicable</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label73">Start Date:</span></td>
+               <td>
+                   <span id="lblStartDate">00/00/0000</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label74">End Date:</span></td>
+               <td>
+                  <span id="lblEndate">00/00/0000</span>
+               </td>
+           </tr>
+             <tr>
+               <td class="tdstyleOutput"> <span id="Label75">Region:</span></td>
+               <td>
+                   <span id="lblERegion">Not Applicable</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label76">District:</span></td>
+               <td>
+                <span id="lblEDistrict"></span>
+               </td>
+           </tr>
+             
+             <tr>
+               <td class="tdstyleOutput"> <span id="Label78">Job Duties:</span></td>
+               <td>
+                   <span id="lblJobDuties">Not Applicable</span>
+               </td>
+           </tr>
+        </tbody></table>
+            </div>
+
+
+          </fieldset>
+            <hr>
+         <fieldset><legend>Work Preference</legend>
+            <div id="submitOutput">
+           <table>
+           <tbody><tr>
+               <td class="tdstyleOutput"> <span id="Label68">Region:</span></td>
+               <td>
+                   <span id="lblWRegion">Western</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label79">District:</span></td>
+               <td>
+                   <span id="lblWDistrict">Nzema East Municipal</span>
+               </td>
+           </tr>
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label80">Town:</span></td>
+               <td>
+                   <span id="lblWTown">AXIM</span>
+               </td>
+           </tr>
+
+            <tr>
+               <td class="tdstyleOutput"> <span id="Label81">Module Preference:</span></td>
+               <td>
+                  <span id="lblModuleSelected">YIFS</span>
+               </td>
+           </tr>
+
+        </tbody></table>
+        </div>
+        <div class="SubmitRecord">
+            <input id="btnPrev7" onclick="processPhase7Prev()" class="btn btn-success" type="button" value="Prev">
+            <input id="btnSubmit" class="btn btn-success" type="button" value="Submit">
+        </div>
+            
+             
+      </fieldset>
+      </div>
+    </div>
+    </div>
+
+    </div>
+
+    </div>
+    </form>
+
+
+<div id="hintbox" style="width: 150px; left: -500px; top: 276px; visibility: hidden;">If you have any other skills eg dress making,painting,masonry etc</div></body></html>
